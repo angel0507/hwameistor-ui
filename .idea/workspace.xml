@@ -5,18 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9c82eb5b-e541-450a-9c50-3fe5c517292e" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/LICENSE" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Makefile" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Makefile.variables" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/Dockerfile" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cmd/hwameistor-ui-server/.gitkeep" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/deploy/.gitkeep" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/.gitkeep" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/examples/.gitkeep" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/hack/.gitkeep" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/.gitkeep" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/.gitkeep" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ui/.gitkeep" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -48,16 +38,16 @@
     <property name="go.modules.go.list.on.any.changes.was.set" value="true" />
     <property name="go.sdk.automatically.set" value="true" />
     <property name="go.watchers.conflict.with.on.save.actions.check.performed" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/cmd/hwameistor-ui-server" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/cmd/hwameistor-ui-server" />
       <recent name="$PROJECT_DIR$/test" />
       <recent name="$PROJECT_DIR$/server" />
       <recent name="$PROJECT_DIR$/ui" />
-      <recent name="$PROJECT_DIR$/hack" />
     </key>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
