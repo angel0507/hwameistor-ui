@@ -22,11 +22,11 @@ func NewLocalStorageNodeController(client client.Client, recorder record.EventRe
 }
 
 // ListLocalStorageNode
-func (lsnController *LocalStorageNodeController) ListLocalStorageNode() (apisv1alpha1.LocalStorageNodeList, error) {
-	return apisv1alpha1.LocalStorageNodeList{}, nil
+func (lsnController *LocalStorageNodeController) ListLocalStorageNode() (*apisv1alpha1.LocalStorageNodeList, error) {
+	return &apisv1alpha1.LocalStorageNodeList{}, nil
 }
 
 // GetLocalStorageNode
-func (lsnController *LocalStorageNodeController) GetLocalStorageNode(key client.ObjectKey) (apisv1alpha1.LocalStorageNode, error) {
-	return apisv1alpha1.LocalStorageNode{}, nil
+func (lsnController *LocalStorageNodeController) GetLocalStorageNode(key client.ObjectKey) (*apisv1alpha1.LocalStorageNode, error) {
+	return &apisv1alpha1.LocalStorageNode{}, nil
 }

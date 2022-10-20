@@ -22,11 +22,11 @@ func NewLocalVolumeController(client client.Client, recorder record.EventRecorde
 }
 
 // ListLocalVolume
-func (lvController *LocalVolumeController) ListLocalVolume() (apisv1alpha1.LocalVolumeList, error) {
-	return apisv1alpha1.LocalVolumeList{}, nil
+func (lvController *LocalVolumeController) ListLocalVolume() (*apisv1alpha1.LocalVolumeList, error) {
+	return &apisv1alpha1.LocalVolumeList{}, nil
 }
 
 // GetLocalVolume
-func (lvController *LocalVolumeController) GetLocalVolume(key client.ObjectKey) (apisv1alpha1.LocalVolume, error) {
-	return apisv1alpha1.LocalVolume{}, nil
+func (lvController *LocalVolumeController) GetLocalVolume(key client.ObjectKey) (*apisv1alpha1.LocalVolume, error) {
+	return &apisv1alpha1.LocalVolume{}, nil
 }

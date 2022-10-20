@@ -4,21 +4,8 @@ import (
 	"fmt"
 	log "github.com/sirupsen/logrus"
 	"os"
-)
-
-// disk class
-const (
-	DiskClassNameHDD  = "HDD"
-	DiskClassNameSSD  = "SSD"
-	DiskClassNameNVMe = "NVMe"
-)
-
-// consts
-const (
-	PoolNamePrefix  = "LocalStorage_Pool"
-	PoolNameForHDD  = PoolNamePrefix + DiskClassNameHDD
-	PoolNameForSSD  = PoolNamePrefix + DiskClassNameSSD
-	PoolNameForNVMe = PoolNamePrefix + DiskClassNameNVMe
+	"os/signal"
+	"syscall"
 )
 
 // GetNodeName gets the node name from env, else
@@ -50,4 +37,14 @@ func GetRequiredEnv(key string) (string, error) {
 		return "", fmt.Errorf("can't get required environment variable, env %v wasn't set", key)
 	}
 	return env, nil
+}
+
+func RegisterShutdownChannel(done chan struct{}) {
+	sigs := make(chan os.Signal, 1)
+	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
+	go func() {
+		sig := <-sigs
+		log.Infof("Receive %v to exit", sig)
+		close(done)
+	}()
 }
