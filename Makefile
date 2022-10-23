@@ -1,8 +1,11 @@
 include Makefile.variables
 
-# hwameistor-ui-server build definitions
-UIServer_MODULE_NAME = hwameistor-ui-server
-UIServer_BUILD_INPUT = ${CMDS_DIR}/${UIServer_MODULE_NAME}/ui-server.go
+PROJECT_SOURCE_CODE_DIR ?= $(CURDIR)
+BINS_DIR = ${PROJECT_SOURCE_CODE_DIR}/_build
+
+# hwameistor-ui build definitions
+PROJECT_MODULE_NAME = hwameistor-ui
+PROJECT_BUILD_INPUT = ${CMDS_DIR}/${PROJECT_MODULE_NAME}/main.go
 
 .PHONY: debug
 debug:
@@ -31,18 +34,18 @@ vendor:
 release_uiserver:
 	# build for amd64 version
 	${DOCKER_MAKE_CMD} make compile_uiserver
-	${DOCKER_BUILDX_CMD_AMD64} -t ${UIServer_IMAGE_NAME}:${RELEASE_TAG}-amd64 -f ${UIServer_IMAGE_DOCKERFILE} ${PROJECT_SOURCE_CODE_DIR}
+	${DOCKER_BUILDX_CMD_AMD64} -t ${PROJECT_IMAGE_NAME}:${RELEASE_TAG}-amd64 -f ${PROJECT_IMAGE_DOCKERFILE} ${PROJECT_SOURCE_CODE_DIR}
 	# build for arm64 version
 	${DOCKER_MAKE_CMD} make compile_uiserver_arm64
-	${DOCKER_BUILDX_CMD_ARM64} -t ${UIServer_IMAGE_NAME}:${RELEASE_TAG}-arm64 -f ${UIServer_IMAGE_DOCKERFILE} ${PROJECT_SOURCE_CODE_DIR}
+	${DOCKER_BUILDX_CMD_ARM64} -t ${PROJECT_IMAGE_NAME}:${RELEASE_TAG}-arm64 -f ${PROJECT_IMAGE_DOCKERFILE} ${PROJECT_SOURCE_CODE_DIR}
 	# push to a public registry
-	${MUILT_ARCH_PUSH_CMD} ${UIServer_IMAGE_NAME}:${RELEASE_TAG}
+	${MUILT_ARCH_PUSH_CMD} ${PROJECT_IMAGE_NAME}:${RELEASE_TAG}
 
 .PHONY: build_uiserver_image
 build_uiserver_image:
-	@echo "Build local-storage image ${UIServer_IMAGE_NAME}:${IMAGE_TAG}"
+	@echo "Build local-storage image ${PROJECT_IMAGE_NAME}:${IMAGE_TAG}"
 	${DOCKER_MAKE_CMD} make compile_uiserver
-	docker build -t ${UIServer_IMAGE_NAME}:${IMAGE_TAG} -f ${UIServer_IMAGE_DOCKERFILE} ${PROJECT_SOURCE_CODE_DIR}
+	docker build -t ${PROJECT_IMAGE_NAME}:${IMAGE_TAG} -f ${PROJECT_IMAGE_DOCKERFILE} ${PROJECT_SOURCE_CODE_DIR}
 
 .PHONY: apis
 apis:
@@ -55,11 +58,11 @@ builder:
 
 .PHONY: compile_uiserver
 compile_uiserver:
-	GOARCH=amd64 ${BUILD_ENVS} ${BUILD_CMD} ${BUILD_OPTIONS} -o ${UIServer_BUILD_OUTPUT} ${UIServer_BUILD_INPUT}
+	GOARCH=amd64 ${BUILD_ENVS} ${BUILD_CMD} ${BUILD_OPTIONS} -o ${PROJECT_BUILD_OUTPUT} ${PROJECT_BUILD_INPUT}
 
 .PHONY: compile_uiserver_arm64
 compile_uiserver_arm64:
-	GOARCH=arm64 ${BUILD_ENVS} ${BUILD_CMD} ${BUILD_OPTIONS} -o ${UIServer_BUILD_OUTPUT} ${UIServer_BUILD_INPUT}
+	GOARCH=arm64 ${BUILD_ENVS} ${BUILD_CMD} ${BUILD_OPTIONS} -o ${PROJECT_BUILD_OUTPUT} ${PROJECT_BUILD_INPUT}
 
 .PHONY: _enable_buildx
 _enable_buildx:

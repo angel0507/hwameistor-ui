@@ -1,6 +1,6 @@
 # [ COMMON ]
 #----------------
-MODULE_NAME = hwameistor
+MODULE_NAME = hwameistor-ui
 PROJECT_SOURCE_CODE_DIR ?= $(CURDIR)
 BINS_DIR = ${PROJECT_SOURCE_CODE_DIR}/_build
 CMDS_DIR = ${PROJECT_SOURCE_CODE_DIR}/cmd
@@ -12,19 +12,19 @@ IMAGE_REGISTRY ?= ghcr.io/hwameistor
 IMAGE_TAG ?= 99.9-dev
 RELEASE_TAG ?= $(shell tagged="$$(git describe --tags --match='v*' --abbrev=0 2> /dev/null)"; if [ "$$tagged" ] && [ "$$(git rev-list -n1 HEAD)" = "$$(git rev-list -n1 $$tagged)" ]; then echo $$tagged; fi)
 
-# [ IMAGE/UIServer ]
-UIServer_IMAGE_NAME = ${IMAGE_REGISTRY}/${UIServer_MODULE_NAME}
-UIServer_IMAGE_DOCKERFILE = ${PROJECT_SOURCE_CODE_DIR}/build/${UIServer_MODULE_NAME}/Dockerfile
+# [ IMAGE/PROJECT ]
+PROJECT_IMAGE_NAME = ${IMAGE_REGISTRY}/${MODULE_NAME}
+PROJECT_IMAGE_DOCKERFILE = ${PROJECT_SOURCE_CODE_DIR}/build/Dockerfile
 
 # [ BUILD ]
 #----------------
-# Common build tooUIServer and build flags
+# Common build tooPROJECT and build flags
 GO_VERSION = $(shell go version)
 BUILD_TIME = ${shell date +%Y-%m-%dT%H:%M:%SZ}
 BUILD_VERSION = ${shell git rev-parse --short "HEAD^{commit}" 2>/dev/null}
 BUILD_ENVS = CGO_ENABLED=0 GOOS=linux
 BUILD_FLAGS = -X 'main.BUILDVERSION=${BUILD_VERSION}' -X 'main.BUILDTIME=${BUILD_TIME}' -X 'main.GOVERSION=${GO_VERSION}'
-BUILD_OPTIONS = -a -mod vendor -instalUIServeruffix cgo -ldflags "${BUILD_FLAGS}"
+BUILD_OPTIONS = -a -mod vendor -installsuffix cgo -ldflags "${BUILD_FLAGS}"
 BUILD_CMD = go build
 
 DOCKER_SOCK_PATH=/var/run/docker.sock
@@ -35,8 +35,8 @@ MUILT_ARCH_PUSH_CMD = ${PROJECT_SOURCE_CODE_DIR}/build/util/docker-push-with-mul
 DOCKER_BUILDX_CMD_AMD64 = DOCKER_CLI_EXPERIMENTAL=enabled docker buildx build --platform=linux/amd64 -o type=docker
 DOCKER_BUILDX_CMD_ARM64 = DOCKER_CLI_EXPERIMENTAL=enabled docker buildx build --platform=linux/arm64 -o type=docker
 
-# [ BUILD/UIServer ]
-UIServer_BUILD_OUTPUT = ${BINS_DIR}/${UIServer_MODULE_NAME}
+# [ BUILD/PROJECT ]
+PROJECT_BUILD_OUTPUT = ${BINS_DIR}/${PROJECT_MODULE_NAME}
 
 # [ BUILDER ]
 #----------------
@@ -47,5 +47,5 @@ BUILDER_MOUNT_DST_DIR = /go/src/github.com/hwameistor/hwameistor
 
 # [OPERATOR]
 #----------------
-# Operator tooUIServer
+# Operator tooPROJECT
 OPERATOR_CMD = operator-sdk
