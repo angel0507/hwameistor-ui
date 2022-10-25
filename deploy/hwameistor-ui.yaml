@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: hwameistor-ui
+  name: hwameistor-ui
+  namespace: Hwameistor
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hwameistor-ui
+  template:
+    metadata:
+      labels:
+        app: hwameistor-ui
+    spec:
+      containers:
+      - name: hwameistor-ui
+        image: ghcr.io/hwameistor/hwameistor-ui:99.9-dev
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+        - name : nginx-cache
+          mountPath: /var/cache/nginx/
+        - name : nginx-config
+          mountPath: /var/config/nginx/
+        - name: var-run
+          mountPath: /var/run/
+        ports:
+        - containerPort: 8000
+          name: http
+        env:
+          - name: NODENAME
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: spec.nodeName
+          - name: NAMESPACE
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+        args:
+        - --nodename=$(NODENAME)
+        - --namespace=$(NAMESPACE)
+      volumes:
+      - emptyDir: {}
+        name: nginx-cache
+      - emptyDir: {}
+        name: nginx-config
+      - emptyDir: {}
+        name: var-run
+---
+kind: Service
+apiVersion: v1
+metadata:
+  labels:
+    app: hwameistor-ui
+  name: hwameistor-ui
+  namespace: Hwameistor
+spec:
+  type: NodePort
+  selector:
+    app: hwameistor-ui
+  ports:
+  - name: http
+    port: 80
+    targetPort: 80
+    nodePort: 30036
+    protocol: TCP
