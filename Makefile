@@ -39,7 +39,7 @@ release_uiserver:
 	${DOCKER_MAKE_CMD} make compile_uiserver_arm64
 	${DOCKER_BUILDX_CMD_ARM64} -t ${PROJECT_IMAGE_NAME}:${RELEASE_TAG}-arm64 -f ${PROJECT_IMAGE_DOCKERFILE} ${PROJECT_SOURCE_CODE_DIR}
 	# push to a public registry
-	${MUILT_ARCH_PUSH_CMD} ${PROJECT_IMAGE_NAME}:${RELEASE_TAG}
+#	${MUILT_ARCH_PUSH_CMD} ${PROJECT_IMAGE_NAME}:${RELEASE_TAG}
 
 .PHONY: build_uiserver_image
 build_uiserver_image:

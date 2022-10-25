@@ -1,0 +1,33 @@
+name: HwameiStor-UI PR
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "server/**"
+      - "ui/**"
+
+jobs:
+  unit-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Setup go
+        uses: actions/setup-go@v1
+        with:
+          go-version: 1.17
+  pr-test:
+    runs-on: ["self-hosted"]
+    timeout-minutes: 180
+    steps:
+      - name: delete
+        run: |
+          sudo rm -rf /github/actions-runner/_work/hwameistor/hwameistor-ui/_build
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
