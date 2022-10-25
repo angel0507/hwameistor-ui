@@ -22,7 +22,7 @@ release:release_uiserver
 
 .PHONY: unit-test
 unit-test:
-	go test -race -coverprofile=coverage.txt -covermode=atomic ./pkg/...
+	go test -race -coverprofile=coverage.txt -covermode=atomic ./server/pkg/...
 	curl -s https://codecov.io/bash | bash
 
 .PHONY: vendor
@@ -43,7 +43,7 @@ release_uiserver:
 
 .PHONY: build_uiserver_image
 build_uiserver_image:
-	@echo "Build local-storage image ${PROJECT_IMAGE_NAME}:${IMAGE_TAG}"
+	@echo "Build hwameistor uiserver image ${PROJECT_IMAGE_NAME}:${IMAGE_TAG}"
 	${DOCKER_MAKE_CMD} make compile_uiserver
 	docker build -t ${PROJECT_IMAGE_NAME}:${IMAGE_TAG} -f ${PROJECT_IMAGE_DOCKERFILE} ${PROJECT_SOURCE_CODE_DIR}
 
