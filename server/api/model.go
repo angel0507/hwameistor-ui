@@ -10,7 +10,7 @@ type Volume struct {
 	client.Resource
 
 	Name string `json:"name"`
-	Size string `json:"size"`
+	Size int64  `json:"size"`
 }
 
 // volumeList
@@ -32,10 +32,13 @@ type NodeList struct {
 
 func ToVolumeResource(lv apisv1alpha1.LocalVolume) *Volume {
 	r := &Volume{}
+	r.Name = lv.Name
+	r.Size = lv.Spec.RequiredCapacityBytes
 	return r
 }
 
 func ToNodeResource(lv apisv1alpha1.LocalStorageNode) *Node {
 	r := &Node{}
+	r.Name = lv.Name
 	return r
 }

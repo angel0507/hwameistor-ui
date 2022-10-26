@@ -15,6 +15,7 @@ spec:
       labels:
         app: hwameistor-ui
     spec:
+      serviceAccountName: hwameistor-ui
       containers:
       - name: hwameistor-ui
         image: ghcr.io/hwameistor/hwameistor-ui:99.9-dev

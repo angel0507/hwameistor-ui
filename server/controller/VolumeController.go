@@ -6,6 +6,7 @@ import (
 	"github.com/hwameistor/hwameistor-ui/server/api"
 	"github.com/hwameistor/hwameistor-ui/server/manager"
 	"github.com/hwameistor/hwameistor-ui/server/response"
+	log "github.com/sirupsen/logrus"
 	pkgclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -48,11 +49,12 @@ func (v *VolumeController) List(ctx *gin.Context) {
 	if err != nil {
 		response.Fail(ctx, "数据卷列表不存在", nil)
 	}
+	log.Printf("List lvs = %v", lvs)
 
 	var volums []*api.Volume
 	for _, lv := range lvs.Items {
 		volums = append(volums, api.ToVolumeResource(lv))
 	}
 
-	response.Success(ctx, gin.H{"volume": volums}, "成功")
+	response.Success(ctx, gin.H{"volumes": volums}, "成功")
 }
