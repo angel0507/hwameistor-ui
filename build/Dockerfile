@@ -18,7 +18,11 @@ COPY --from=builder /app/dist /usr/share/nginx/html
 COPY --from=builder /app/nginx.conf /etc/nginx/nginx.conf
 COPY --from=hwameistor /hwameistor-ui /hwameistor-ui
 
+RUN mkdir /entry
+COPY ./entrypoint.sh /entry
+RUN chmod a+x /entry
+
 EXPOSE 80
-ENTRYPOINT [ "/hwameistor-ui" ]
+ENTRYPOINT [ "/entry" ]
 
 
