@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hwameistor/hwameistor-ui/server/api"
 	"github.com/hwameistor/hwameistor-ui/server/manager"
-	"github.com/hwameistor/hwameistor-ui/server/response"
+	"net/http"
 	pkgclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -21,29 +21,46 @@ func NewNodeController(m *manager.ServerManager) INodeController {
 	return &NodeController{m}
 }
 
-// GetNode
+// Get godoc
+// @Summary 摘要 获取节点
+// @Description get node
+// @Tags        Node
+// @Param       Name query string true "name"
+// @Accept      json
+// @Produce     json
+// @Success     200 {object}  api.Node
+// @Router      /nodes/nodes/:name [get]
 func (n *NodeController) Get(ctx *gin.Context) {
 	// 获取path中的name
 	nodeName := ctx.Params.ByName("name")
 
 	if nodeName == "" {
-		response.Fail(ctx, "数据验证错误，数据卷名称必填", nil)
+		ctx.JSON(http.StatusNonAuthoritativeInfo, nil)
 		return
 	}
 	lsn, err := n.m.LocalStorageNodeController().GetLocalStorageNode(pkgclient.ObjectKey{Name: nodeName})
 	if err != nil {
-		response.Fail(ctx, "数据节点不存在", nil)
+		ctx.JSON(http.StatusNotFound, nil)
 	}
 
-	response.Success(ctx, gin.H{"node": api.ToNodeResource(*lsn)}, "成功")
+	node := api.ToNodeResource(*lsn)
+	ctx.JSON(http.StatusOK, node)
 }
 
-// ListNodes
+// List godoc
+// @Summary     摘要 获取节点列表
+// @Description list nodes
+// @Tags        Node
+// @Param       Name query string false "name"
+// @Accept      json
+// @Produce     json
+// @Success     200 {object} api.NodeList
+// @Router      /nodes/nodes [get]
 func (n *NodeController) List(ctx *gin.Context) {
 
 	lsns, err := n.m.LocalStorageNodeController().ListLocalStorageNode()
 	if err != nil {
-		response.Fail(ctx, "数据节点列表不存在", nil)
+		ctx.JSON(http.StatusNotFound, nil)
 	}
 
 	var nodes []*api.Node
@@ -51,5 +68,7 @@ func (n *NodeController) List(ctx *gin.Context) {
 		nodes = append(nodes, api.ToNodeResource(lsn))
 	}
 
-	response.Success(ctx, gin.H{"node": nodes}, "成功")
+	var nodeList api.NodeList
+	nodeList.Nodes = nodes
+	ctx.JSON(http.StatusOK, nodes)
 }

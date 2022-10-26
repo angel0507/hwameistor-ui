@@ -1,0 +1,177 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "contact": {}
+    },
+    "paths": {
+        "/nodes/nodes": {
+            "get": {
+                "description": "list nodes",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Node"
+                ],
+                "summary": "摘要 获取节点列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "name",
+                        "name": "Name",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.NodeList"
+                        }
+                    }
+                }
+            }
+        },
+        "/nodes/nodes/:name": {
+            "get": {
+                "description": "get node",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Node"
+                ],
+                "summary": "摘要 获取节点",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "name",
+                        "name": "Name",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.Node"
+                        }
+                    }
+                }
+            }
+        },
+        "/volumes/volumes": {
+            "get": {
+                "description": "list volumes",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Volume"
+                ],
+                "summary": "摘要 获取数据卷列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "name",
+                        "name": "Name",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/api.Volume"
+                        }
+                    }
+                }
+            }
+        },
+        "/volumes/volumes/:name": {
+            "get": {
+                "description": "get volume",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Volume"
+                ],
+                "summary": "摘要 获取数据卷",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "name",
+                        "name": "Name",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.VolumeList"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "api.Node": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "api.NodeList": {
+            "type": "object",
+            "properties": {
+                "nodes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/api.Node"
+                    }
+                }
+            }
+        },
+        "api.Volume": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "size": {
+                    "type": "integer"
+                }
+            }
+        },
+        "api.VolumeList": {
+            "type": "object",
+            "properties": {
+                "volumes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/api.Volume"
+                    }
+                }
+            }
+        }
+    }
+}
