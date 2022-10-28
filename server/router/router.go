@@ -26,24 +26,25 @@ var (
 func CollectRoute(r *gin.Engine) *gin.Engine {
 	fmt.Println("CollectRoute start ...")
 
-	m := buildServerMgr()
+	m := BuildServerMgr()
 
+	v1 := r.Group("/api/v1")
 	volumeController := controller.NewVolumeController(m)
-	volumeRoutes := r.Group("/volumes")
-	volumeRoutes.GET("/v1/volumes", volumeController.List)
-	volumeRoutes.GET("/v1/volumes/:name", volumeController.Get)
+	volumeRoutes := v1.Group("/volumes")
+	volumeRoutes.GET("/volumes", volumeController.List)
+	volumeRoutes.GET("/volumes/:name", volumeController.Get)
 
 	nodeController := controller.NewNodeController(m)
-	nodeRoutes := r.Group("/nodes")
-	nodeRoutes.GET("/v1/nodes", nodeController.List)
-	nodeRoutes.GET("/v1/nodes/:name", nodeController.Get)
+	nodeRoutes := v1.Group("/nodes")
+	nodeRoutes.GET("/nodes", nodeController.List)
+	nodeRoutes.GET("/nodes/:name", nodeController.Get)
 
 	fmt.Println("CollectRoute end ...")
 
 	return r
 }
 
-func buildServerMgr() *manager.ServerManager {
+func BuildServerMgr() *manager.ServerManager {
 	fmt.Println("buildServerMgr start ...")
 
 	// Get a config to talk to the apiserver

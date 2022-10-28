@@ -2,32 +2,27 @@ package api
 
 import (
 	apisv1alpha1 "github.com/hwameistor/hwameistor/pkg/apis/hwameistor/v1alpha1"
-	"github.com/rancher/go-rancher/client"
 )
 
 // volume
 type Volume struct {
-	client.Resource
-
 	Name string `json:"name"`
 	Size int64  `json:"size"`
 }
 
 // volumeList
 type VolumeList struct {
-	Volumes []Volume `json:"volumes"`
+	Volumes []*Volume `json:"volumes"`
 }
 
 // node
 type Node struct {
-	client.Resource
-
 	Name string `json:"name"`
 }
 
 // nodeList
 type NodeList struct {
-	Nodes []Volume `json:"nodes"`
+	Nodes []*Node `json:"nodes"`
 }
 
 func ToVolumeResource(lv apisv1alpha1.LocalVolume) *Volume {
@@ -37,8 +32,8 @@ func ToVolumeResource(lv apisv1alpha1.LocalVolume) *Volume {
 	return r
 }
 
-func ToNodeResource(lv apisv1alpha1.LocalStorageNode) *Node {
+func ToNodeResource(lsn apisv1alpha1.LocalStorageNode) *Node {
 	r := &Node{}
-	r.Name = lv.Name
+	r.Name = lsn.Name
 	return r
 }

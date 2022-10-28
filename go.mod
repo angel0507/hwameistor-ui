@@ -28,7 +28,11 @@ require (
 	sigs.k8s.io/structured-merge-diff/v3 v3.0.1 // indirect
 )
 
-require github.com/swaggo/swag v1.8.7
+require (
+	github.com/swaggo/files v0.0.0-20220728132757-551d4a08d97a
+	github.com/swaggo/gin-swagger v1.5.3
+	github.com/swaggo/swag v1.8.7
+)
 
 require (
 	github.com/BurntSushi/toml v1.1.0 // indirect

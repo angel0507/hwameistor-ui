@@ -5,8 +5,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hwameistor/hwameistor-ui/server/api"
 	"github.com/hwameistor/hwameistor-ui/server/manager"
-	"github.com/hwameistor/hwameistor-ui/server/response"
 	log "github.com/sirupsen/logrus"
+	"net/http"
 	pkgclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -25,29 +25,46 @@ func NewVolumeController(m *manager.ServerManager) IVolumeController {
 	return &VolumeController{m}
 }
 
-// GetVolume
+// Get godoc
+// @Summary     摘要 获取数据卷
+// @Description get volume
+// @Tags        Volume
+// @Param       Name query string true "name"
+// @Accept      application/json
+// @Produce     application/json
+// @Success     200 {object} api.VolumeList
+// @Router      /volumes/volumes/:name [get]
 func (v *VolumeController) Get(ctx *gin.Context) {
 	// 获取path中的name
 	volumeName := ctx.Params.ByName("name")
 
 	if volumeName == "" {
-		response.Fail(ctx, "数据验证错误，数据卷名称必填", nil)
+		ctx.JSON(http.StatusNonAuthoritativeInfo, nil)
 		return
 	}
 	lv, err := v.m.LocalVolumeController().GetLocalVolume(pkgclient.ObjectKey{Name: volumeName})
 	if err != nil {
-		response.Fail(ctx, "数据卷不存在", nil)
+		ctx.JSON(http.StatusNotFound, nil)
 	}
 
-	response.Success(ctx, gin.H{"volume": api.ToVolumeResource(*lv)}, "成功")
+	volume := api.ToVolumeResource(*lv)
+	ctx.JSON(http.StatusOK, volume)
 }
 
-// ListVolumes
+// List godoc
+// @Summary 摘要 获取数据卷列表
+// @Description list volumes
+// @Tags        Volume
+// @Param       Name query string false "name"
+// @Accept      json
+// @Produce     json
+// @Success     200 {object}  api.Volume      "成功"
+// @Router      /volumes/volumes [get]
 func (v *VolumeController) List(ctx *gin.Context) {
 
 	lvs, err := v.m.LocalVolumeController().ListLocalVolume()
 	if err != nil {
-		response.Fail(ctx, "数据卷列表不存在", nil)
+		ctx.JSON(http.StatusNotFound, nil)
 	}
 	log.Printf("List lvs = %v", lvs)
 
@@ -56,5 +73,8 @@ func (v *VolumeController) List(ctx *gin.Context) {
 		volums = append(volums, api.ToVolumeResource(lv))
 	}
 
-	response.Success(ctx, gin.H{"volumes": volums}, "成功")
+	var volumeList api.VolumeList
+	volumeList.Volumes = volums
+
+	ctx.JSON(http.StatusOK, volumeList)
 }

@@ -1,0 +1,113 @@
+definitions:
+  api.Node:
+    properties:
+      name:
+        type: string
+    type: object
+  api.NodeList:
+    properties:
+      nodes:
+        items:
+          $ref: '#/definitions/api.Node'
+        type: array
+    type: object
+  api.Volume:
+    properties:
+      name:
+        type: string
+      size:
+        type: integer
+    type: object
+  api.VolumeList:
+    properties:
+      volumes:
+        items:
+          $ref: '#/definitions/api.Volume'
+        type: array
+    type: object
+info:
+  contact: {}
+paths:
+  /nodes/nodes:
+    get:
+      consumes:
+      - application/json
+      description: list nodes
+      parameters:
+      - description: name
+        in: query
+        name: Name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.NodeList'
+      summary: 摘要 获取节点列表
+      tags:
+      - Node
+  /nodes/nodes/:name:
+    get:
+      consumes:
+      - application/json
+      description: get node
+      parameters:
+      - description: name
+        in: query
+        name: Name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.Node'
+      summary: 摘要 获取节点
+      tags:
+      - Node
+  /volumes/volumes:
+    get:
+      consumes:
+      - application/json
+      description: list volumes
+      parameters:
+      - description: name
+        in: query
+        name: Name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/api.Volume'
+      summary: 摘要 获取数据卷列表
+      tags:
+      - Volume
+  /volumes/volumes/:name:
+    get:
+      consumes:
+      - application/json
+      description: get volume
+      parameters:
+      - description: name
+        in: query
+        name: Name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.VolumeList'
+      summary: 摘要 获取数据卷
+      tags:
+      - Volume
+swagger: "2.0"
