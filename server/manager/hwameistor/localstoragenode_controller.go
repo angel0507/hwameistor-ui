@@ -40,7 +40,8 @@ func (lsnController *LocalStorageNodeController) GetLocalStorageNode(key client.
 		if !errors.IsNotFound(err) {
 			log.WithError(err).Error("Failed to query lsn")
 		} else {
-			log.Info("Not found the lsn")
+			log.Printf("GetLocalStorageNode: not found lsn")
+			log.WithError(err)
 		}
 		return nil, err
 	}

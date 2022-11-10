@@ -40,7 +40,7 @@ func NewServerManager(mgr mgrpkg.Manager) (*ServerManager, error) {
 	}, nil
 }
 
-func (m *ServerManager) LocalStorageNodeController() *hwameistorctr.LocalStorageNodeController {
+func (m *ServerManager) StorageNodeController() *hwameistorctr.LocalStorageNodeController {
 	var recorder record.EventRecorder
 	if m.lsnController == nil {
 		m.lsnController = hwameistorctr.NewLocalStorageNodeController(m.mgr.GetClient(), recorder)
@@ -48,7 +48,7 @@ func (m *ServerManager) LocalStorageNodeController() *hwameistorctr.LocalStorage
 	return m.lsnController
 }
 
-func (m *ServerManager) LocalVolumeController() *hwameistorctr.LocalVolumeController {
+func (m *ServerManager) VolumeController() *hwameistorctr.LocalVolumeController {
 	var recorder record.EventRecorder
 	if m.lvController == nil {
 		m.lvController = hwameistorctr.NewLocalVolumeController(m.mgr.GetClient(), recorder)

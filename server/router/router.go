@@ -28,16 +28,47 @@ func CollectRoute(r *gin.Engine) *gin.Engine {
 
 	m := BuildServerMgr()
 
-	v1 := r.Group("/api/v1")
+	v1 := r.Group("/apis/hwameistor.io/v1alpha1")
+	metricsController := controller.NewMetricsController(m)
+	metricsRoutes := v1.Group("/metrics")
+	metricsRoutes.GET("/basemetric", metricsController.BaseMetric)
+	metricsRoutes.GET("/storagepoolusemetric", metricsController.StoragePoolUseMetric)
+	metricsRoutes.GET("/nodestorageusemetric/:storagepoolclass", metricsController.NodeStorageUseMetric)
+	metricsRoutes.GET("/modulestatusmetric", metricsController.ModuleStatusMetric)
+	metricsRoutes.GET("/operations", metricsController.OperationList)
+
 	volumeController := controller.NewVolumeController(m)
+
 	volumeRoutes := v1.Group("/volumes")
-	volumeRoutes.GET("/volumes", volumeController.List)
-	volumeRoutes.GET("/volumes/:name", volumeController.Get)
+	volumeRoutes.GET("/volumes", volumeController.VolumeList)
+	volumeRoutes.GET("/volumes/:volumename", volumeController.VolumeGet)
+
+	volumeRoutes.GET("/volumereplicas/:volumename", volumeController.VolumeReplicasGet)
+	volumeRoutes.GET("/volumereplicas/yamls/:volumereplicaname", volumeController.VolumeReplicaYamlGet)
+
+	volumeRoutes.GET("/volumeoperations", volumeController.VolumeOperationList)
+	volumeRoutes.GET("/volumeoperations/:volumename", volumeController.VolumeOperationGet)
+	volumeRoutes.GET("/volumeoperations/yamls/:operationname", volumeController.VolumeOperationYamlGet)
 
 	nodeController := controller.NewNodeController(m)
 	nodeRoutes := v1.Group("/nodes")
-	nodeRoutes.GET("/nodes", nodeController.List)
-	nodeRoutes.GET("/nodes/:name", nodeController.Get)
+	nodeRoutes.GET("/storagenodes", nodeController.StorageNodeList)
+	nodeRoutes.GET("/storagenodes/:storagenodename", nodeController.StorageNodeGet)
+	nodeRoutes.GET("/storagenodes/:storagenodename/migrates", nodeController.StorageNodeMigrateGet)
+
+	nodeRoutes.GET("/storagenodes/:storagenodename/disks", nodeController.StorageNodeDisksList)
+
+	poolController := controller.NewPoolController(m)
+	poolRoutes := v1.Group("/pools")
+	poolRoutes.GET("/storagepools", poolController.StoragePoolList)
+	poolRoutes.GET("/storagepools/:storagepoolname", poolController.StoragePoolGet)
+	poolRoutes.GET("/storagepools/:storagepoolname/nodes/:nodename/disks", poolController.StorageNodeDisksGetByPoolName)
+	poolRoutes.GET("/storagepools/:storagepoolname/nodes", poolController.StorageNodesGetByPoolName)
+
+	settingController := controller.NewSettingController(m)
+	settingRoutes := v1.Group("/settings")
+	settingRoutes.POST("/highavailabilitysetting/:enabledrbd", settingController.EnableDRBDSetting)
+	settingRoutes.GET("/highavailabilitysetting", settingController.DRBDSettingGet)
 
 	fmt.Println("CollectRoute end ...")
 
@@ -84,7 +115,7 @@ func BuildServerMgr() *manager.ServerManager {
 	stopCh := signals.SetupSignalHandler()
 	// Start the resource controllers manager
 	go func() {
-		log.Info("Starting the manager of all local storage resources.")
+		log.Info("Starting the manager of all  storage resources.")
 		if err := mgr.Start(stopCh); err != nil {
 			log.WithError(err).Error("Failed to run resources manager")
 			os.Exit(1)
