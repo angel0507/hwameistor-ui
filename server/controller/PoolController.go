@@ -53,6 +53,8 @@ func (n *PoolController) StoragePoolGet(ctx *gin.Context) {
 // @Description list StoragePools
 // @Tags        Pool
 // @Param       Name query string false "name"
+// @Param       Page query int32 true "page"
+// @Param       PageSize query int32 true "pageSize"
 // @Accept      json
 // @Produce     json
 // @Success     200 {object} api.StoragePoolList
@@ -79,6 +81,8 @@ func (n *PoolController) StoragePoolList(ctx *gin.Context) {
 // @Description get StorageNodesGetByPoolName
 // @Tags        Pool
 // @Param       StoragePoolName query string true "storagePoolName"
+// @Param       Page query int32 true "page"
+// @Param       PageSize query int32 true "pageSize"
 // @Accept      json
 // @Produce     json
 // @Success     200 {object}  api.StorageNodeListByPool
@@ -106,6 +110,8 @@ func (n *PoolController) StorageNodesGetByPoolName(ctx *gin.Context) {
 // @Tags        Pool
 // @Param       NodeName query string true "nodeName"
 // @Param       StoragePoolName query string true "storagePoolName"
+// @Param       Page query int32 true "page"
+// @Param       PageSize query int32 true "pageSize"
 // @Accept      json
 // @Produce     json
 // @Success     200 {object}  api.NodeDiskListByPool

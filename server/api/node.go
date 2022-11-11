@@ -36,22 +36,18 @@ type StorageNode struct {
 type LocalDiskListByNode struct {
 	// nodeName 节点名称
 	NodeName string `json:"nodeName,omitempty"`
-	// page
-	Page int32 `json:"page,omitempty"`
-	// pageSize
-	PageSize int32 `json:"pageSize,omitempty"`
 	// localDisks 节点磁盘列表
 	LocalDisks []*LocalDisk `json:"localDisks,omitempty"`
+	// page 信息
+	Page *Pagination `json:"page,omitempty"`
 }
 
 // StorageNodeList
 type StorageNodeList struct {
-	// page
-	Page int32 `json:"page,omitempty"`
-	// pageSize
-	PageSize int32 `json:"pageSize,omitempty"`
 	// StorageNodes
 	StorageNodes []*StorageNode `json:"storageNodes,omitempty"`
+	// page 信息
+	Page *Pagination `json:"page,omitempty"`
 }
 
 func ToStorageNodeResource(lsn apisv1alpha1.LocalStorageNode) *StorageNode {

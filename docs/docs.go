@@ -254,6 +254,20 @@ const docTemplate = `{
                         "description": "name",
                         "name": "Name",
                         "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "page",
+                        "name": "Page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "pageSize",
+                        "name": "PageSize",
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -317,6 +331,20 @@ const docTemplate = `{
                         "name": "NodeName",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "page",
+                        "name": "Page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "pageSize",
+                        "name": "PageSize",
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -349,13 +377,27 @@ const docTemplate = `{
                         "name": "NodeName",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "page",
+                        "name": "Page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "pageSize",
+                        "name": "PageSize",
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/api.VolumeOperationList"
+                            "$ref": "#/definitions/api.VolumeOperationListByNode"
                         }
                     }
                 }
@@ -380,6 +422,20 @@ const docTemplate = `{
                         "description": "name",
                         "name": "Name",
                         "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "page",
+                        "name": "Page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "pageSize",
+                        "name": "PageSize",
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -444,6 +500,20 @@ const docTemplate = `{
                         "name": "StoragePoolName",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "page",
+                        "name": "Page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "pageSize",
+                        "name": "PageSize",
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -483,6 +553,20 @@ const docTemplate = `{
                         "name": "StoragePoolName",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "page",
+                        "name": "Page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "pageSize",
+                        "name": "PageSize",
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -490,37 +574,6 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/api.NodeDiskListByPool"
-                        }
-                    }
-                }
-            }
-        },
-        "/volumes/volumeoperations": {
-            "get": {
-                "description": "list VolumeOperations",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Volume"
-                ],
-                "summary": "摘要 获取数据卷操作记录列表信息",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "name",
-                        "name": "Name",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "成功",
-                        "schema": {
-                            "$ref": "#/definitions/api.VolumeOperationList"
                         }
                     }
                 }
@@ -552,7 +605,7 @@ const docTemplate = `{
                     "200": {
                         "description": "成功",
                         "schema": {
-                            "$ref": "#/definitions/api.VolumeOperation"
+                            "$ref": "#/definitions/api.VolumeOperationByVolume"
                         }
                     }
                 }
@@ -673,6 +726,20 @@ const docTemplate = `{
                         "description": "name",
                         "name": "Name",
                         "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "page",
+                        "name": "Page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "pageSize",
+                        "name": "PageSize",
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -852,12 +919,8 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "page": {
-                    "description": "page",
-                    "type": "integer"
-                },
-                "pageSize": {
-                    "description": "pageSize",
-                    "type": "integer"
+                    "description": "page 信息",
+                    "$ref": "#/definitions/api.Pagination"
                 }
             }
         },
@@ -1005,7 +1068,7 @@ const docTemplate = `{
                     "description": "HAState is state for ha replica, replica.Status.State == Ready only when HAState is Consistent of nil",
                     "$ref": "#/definitions/api.HAState"
                 },
-                "inuse": {
+                "inUse": {
                     "description": "InUse is one of volume replica's states, which indicates the replica is used by a Pod or not",
                     "type": "boolean"
                 },
@@ -1050,20 +1113,20 @@ const docTemplate = `{
         "api.NodeDiskListByPool": {
             "type": "object",
             "properties": {
-                "localDiskListByNodes": {
-                    "description": "LocalDiskListByNodes",
+                "localDisks": {
+                    "description": "localDisks 节点磁盘列表",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/api.LocalDiskListByNode"
+                        "$ref": "#/definitions/api.LocalDisk"
                     }
                 },
-                "page": {
-                    "description": "page",
-                    "type": "integer"
+                "nodeName": {
+                    "description": "nodeName 节点名称",
+                    "type": "string"
                 },
-                "pageSize": {
-                    "description": "pageSize",
-                    "type": "integer"
+                "page": {
+                    "description": "page 信息",
+                    "$ref": "#/definitions/api.Pagination"
                 },
                 "storagePoolName": {
                     "description": "StoragePoolName 存储池名称",
@@ -1144,6 +1207,35 @@ const docTemplate = `{
                 }
             }
         },
+        "api.Pagination": {
+            "type": "object",
+            "properties": {
+                "page": {
+                    "description": "当前页索引，从 1 开始，为 0 时，会自动重置为默认值 constants.DefaultPage",
+                    "type": "integer"
+                },
+                "page_size": {
+                    "description": "每页数据量，为 -1 时表示查询全部，为 0 时会重置为默认值\nconstants.DefaultPageSize",
+                    "type": "integer"
+                },
+                "pages": {
+                    "description": "总页数",
+                    "type": "integer"
+                },
+                "search": {
+                    "description": "搜索关键字，支持模糊搜索,精准匹配和高级搜索.",
+                    "type": "string"
+                },
+                "sort": {
+                    "description": "排序规则，支持字符串和数字类型的字段进行排序",
+                    "type": "string"
+                },
+                "total": {
+                    "description": "总共有多少条目，请求时可以不用传递",
+                    "type": "integer"
+                }
+            }
+        },
         "api.StorageNode": {
             "type": "object",
             "properties": {
@@ -1201,12 +1293,8 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "page": {
-                    "description": "page",
-                    "type": "integer"
-                },
-                "pageSize": {
-                    "description": "pageSize",
-                    "type": "integer"
+                    "description": "page 信息",
+                    "$ref": "#/definitions/api.Pagination"
                 },
                 "storageNodes": {
                     "description": "StorageNodes",
@@ -1220,6 +1308,10 @@ const docTemplate = `{
         "api.StorageNodeListByPool": {
             "type": "object",
             "properties": {
+                "page": {
+                    "description": "page 信息",
+                    "$ref": "#/definitions/api.Pagination"
+                },
                 "storageNodes": {
                     "description": "StorageNodes",
                     "type": "array",
@@ -1270,12 +1362,8 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "page": {
-                    "description": "page",
-                    "type": "integer"
-                },
-                "pageSize": {
-                    "description": "pageSize",
-                    "type": "integer"
+                    "description": "page 信息",
+                    "$ref": "#/definitions/api.Pagination"
                 },
                 "storagePools": {
                     "description": "storagePools",
@@ -1349,7 +1437,7 @@ const docTemplate = `{
                     "description": "local volume state 状态",
                     "type": "string"
                 },
-                "volumegroup": {
+                "volumeGroup": {
                     "description": "VolumeGroup is the group name of the local volumes. It is designed for the scheduling and allocating. 磁盘组",
                     "type": "string"
                 }
@@ -1359,12 +1447,8 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "page": {
-                    "description": "page",
-                    "type": "integer"
-                },
-                "pageSize": {
-                    "description": "pageSize",
-                    "type": "integer"
+                    "description": "page 信息",
+                    "$ref": "#/definitions/api.Pagination"
                 },
                 "volumes": {
                     "description": "volumes",
@@ -1378,10 +1462,6 @@ const docTemplate = `{
         "api.VolumeMigrateOperation": {
             "type": "object",
             "properties": {
-                "VolumeName": {
-                    "description": "VolumeName 迁移卷名称",
-                    "type": "string"
-                },
                 "endTime": {
                     "description": "EndTime 迁移结束时间",
                     "type": "string"
@@ -1405,46 +1485,46 @@ const docTemplate = `{
                 "targetNode": {
                     "description": "TargetNode 迁移目的节点",
                     "type": "string"
+                },
+                "volumeName": {
+                    "description": "VolumeName 迁移卷名称",
+                    "type": "string"
                 }
             }
         },
-        "api.VolumeOperation": {
+        "api.VolumeOperationByVolume": {
             "type": "object",
             "properties": {
-                "VolumeMigrateOperations": {
+                "volumeMigrateOperations": {
                     "description": "VolumeMigrateOperations",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/api.VolumeMigrateOperation"
                     }
                 },
-                "page": {
-                    "description": "page",
-                    "type": "integer"
-                },
-                "pageSize": {
-                    "description": "pageSize",
-                    "type": "integer"
-                },
                 "volumeName": {
-                    "description": "volume name",
+                    "description": "VolumeName",
                     "type": "string"
                 }
             }
         },
-        "api.VolumeOperationList": {
+        "api.VolumeOperationListByNode": {
             "type": "object",
             "properties": {
-                "VolumeOperations": {
-                    "description": "VolumeOperations",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/api.VolumeOperation"
-                    }
-                },
                 "nodeName": {
                     "description": "node name",
                     "type": "string"
+                },
+                "page": {
+                    "description": "page 信息",
+                    "$ref": "#/definitions/api.Pagination"
+                },
+                "volumeMigrateOperations": {
+                    "description": "VolumeOperations",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/api.VolumeMigrateOperation"
+                    }
                 }
             }
         },

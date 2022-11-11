@@ -18,7 +18,6 @@ type IVolumeController interface {
 	VolumeList(ctx *gin.Context)
 	VolumeReplicasGet(ctx *gin.Context)
 	VolumeReplicaYamlGet(ctx *gin.Context)
-	VolumeOperationList(ctx *gin.Context)
 	VolumeOperationGet(ctx *gin.Context)
 	VolumeOperationYamlGet(ctx *gin.Context)
 }
@@ -65,6 +64,8 @@ func (v *VolumeController) VolumeGet(ctx *gin.Context) {
 // @Description list Volume
 // @Tags        Volume
 // @Param       Name query string false "name"
+// @Param       Page query int32 true "page"
+// @Param       PageSize query int32 true "pageSize"
 // @Accept      json
 // @Produce     json
 // @Success     200 {object}  api.VolumeList   "成功"
@@ -144,34 +145,6 @@ func (v *VolumeController) VolumeReplicaYamlGet(ctx *gin.Context) {
 	//ctx.JSON(http.StatusOK, volumeList)
 }
 
-// List godoc
-// @Summary 摘要 获取数据卷操作记录列表信息
-// @Description list VolumeOperations
-// @Tags        Volume
-// @Param       Name query string false "name"
-// @Accept      json
-// @Produce     json
-// @Success     200 {object}  api.VolumeOperationList      "成功"
-// @Router      /volumes/volumeoperations [get]
-func (v *VolumeController) VolumeOperationList(ctx *gin.Context) {
-
-	//lvs, err := v.m.VolumeController().ListVolume()
-	//if err != nil {
-	//	ctx.JSON(http.StatusNotFound, nil)
-	//}
-	//log.Printf("List lvs = %v", lvs)
-	//
-	//var volums []*api.Volume
-	//for _, lv := range lvs.Items {
-	//	volums = append(volums, api.ToVolumeResource(lv))
-	//}
-	//
-	//var volumeList api.VolumeList
-	//volumeList.Volumes = volums
-	//
-	//ctx.JSON(http.StatusOK, volumeList)
-}
-
 // VolumeOperationGet godoc
 // @Summary 摘要 获取指定数据卷操作记录信息（目前仅包含迁移运维操作）
 // @Description get VolumeOperation
@@ -179,7 +152,7 @@ func (v *VolumeController) VolumeOperationList(ctx *gin.Context) {
 // @Param       VolumeName query string true "volumeName"
 // @Accept      json
 // @Produce     json
-// @Success     200 {object}  api.VolumeOperation      "成功"
+// @Success     200 {object}  api.VolumeOperationByVolume      "成功"
 // @Router      /volumes/volumeoperations/:volumename [get]
 func (v *VolumeController) VolumeOperationGet(ctx *gin.Context) {
 

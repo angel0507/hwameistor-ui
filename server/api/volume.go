@@ -24,7 +24,7 @@ type Volume struct {
 	ReplicaNumber int64 `json:"replicaNumber,omitempty"`
 
 	// VolumeGroup is the group name of the local volumes. It is designed for the scheduling and allocating. 磁盘组
-	VolumeGroup string `json:"volumegroup,omitempty"`
+	VolumeGroup string `json:"volumeGroup,omitempty"`
 
 	// size 容量
 	RequiredCapacityBytes int64 `json:"requiredCapacityBytes,omitempty"`
@@ -44,12 +44,10 @@ type Volume struct {
 
 // VolumeList
 type VolumeList struct {
-	// page
-	Page int32 `json:"page,omitempty"`
-	// pageSize
-	PageSize int32 `json:"pageSize,omitempty"`
 	// volumes
 	Volumes []*Volume `json:"volumes,omitempty"`
+	// page 信息
+	Page *Pagination `json:"page,omitempty"`
 }
 
 // VolumeReplica
@@ -86,23 +84,29 @@ type VolumeReplicaList struct {
 }
 
 // VolumeOperationList
-type VolumeOperationList struct {
+type VolumeOperationListByNode struct {
 	// node name
 	NodeName string `json:"nodeName,omitempty"`
 	// VolumeOperations
-	VolumeOperations []*VolumeOperation `json:"VolumeOperations,omitempty"`
+	VolumeMigrateOperations []*VolumeMigrateOperation `json:"volumeMigrateOperations,omitempty"`
+	// page 信息
+	Page *Pagination `json:"page,omitempty"`
 }
 
-// only migrate operation now
-type VolumeOperation struct {
-	// volume name
+// VolumeOperationByVolume
+type VolumeOperationByVolume struct {
+	// VolumeName
 	VolumeName string `json:"volumeName,omitempty"`
-	// page
-	Page int32 `json:"page,omitempty"`
-	// pageSize
-	PageSize int32 `json:"pageSize,omitempty"`
 	// VolumeMigrateOperations
-	VolumeMigrateOperations []*VolumeMigrateOperation `json:"VolumeMigrateOperations,omitempty"`
+	VolumeMigrateOperations []*VolumeMigrateOperation `json:"volumeMigrateOperations,omitempty"`
+}
+
+// VolumeOperationByMigrate
+type VolumeOperationByMigrate struct {
+	// VolumeMigrateName name
+	VolumeMigrateName string `json:"volumeMigrateName,omitempty"`
+	// VolumeOperation
+	VolumeMigrateOperation *VolumeMigrateOperation `json:"volumeMigrateOperation,omitempty"`
 }
 
 // VolumeMigrateOperation
@@ -114,7 +118,7 @@ type VolumeMigrateOperation struct {
 	State State `json:"state,omitempty"`
 
 	// VolumeName 迁移卷名称
-	VolumeName string `json:"VolumeName"`
+	VolumeName string `json:"volumeName"`
 
 	// SourceNode 迁移源节点
 	SourceNode string `json:"sourceNode"`
@@ -225,7 +229,7 @@ type LocalVolumeReplicaStatus struct {
 	HAState *HAState `json:"haState,omitempty"`
 
 	// InUse is one of volume replica's states, which indicates the replica is used by a Pod or not
-	InUse bool `json:"inuse,omitempty"`
+	InUse bool `json:"inUse,omitempty"`
 }
 
 // HAState is state for ha replica

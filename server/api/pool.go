@@ -29,24 +29,22 @@ type StoragePool struct {
 
 // StoragePoolList
 type StoragePoolList struct {
-	// page
-	Page int32 `json:"page,omitempty"`
-	// pageSize
-	PageSize int32 `json:"pageSize,omitempty"`
 	// storagePools
 	StoragePools []*StoragePool `json:"storagePools"`
+	// page 信息
+	Page *Pagination `json:"page,omitempty"`
 }
 
 // NodeDiskListByPool
 type NodeDiskListByPool struct {
-	// page
-	Page int32 `json:"page,omitempty"`
-	// pageSize
-	PageSize int32 `json:"pageSize,omitempty"`
 	// StoragePoolName 存储池名称
 	StoragePoolName string `json:"storagePoolName,omitempty"`
-	// LocalDiskListByNodes
-	LocalDiskListByNodes []LocalDiskListByNode `json:"localDiskListByNodes,omitempty"`
+	// nodeName 节点名称
+	NodeName string `json:"nodeName,omitempty"`
+	// localDisks 节点磁盘列表
+	LocalDisks []*LocalDisk `json:"localDisks,omitempty"`
+	// page 信息
+	Page *Pagination `json:"page,omitempty"`
 }
 
 // StorageNodeListByPool
@@ -55,4 +53,6 @@ type StorageNodeListByPool struct {
 	StoragePoolName string `json:"storagePoolName,omitempty"`
 	// StorageNodes
 	StorageNodes []*StorageNode `json:"storageNodes,omitempty"`
+	// page 信息
+	Page *Pagination `json:"page,omitempty"`
 }

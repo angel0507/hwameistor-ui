@@ -97,11 +97,8 @@ definitions:
         description: nodeName 节点名称
         type: string
       page:
-        description: page
-        type: integer
-      pageSize:
-        description: pageSize
-        type: integer
+        $ref: '#/definitions/api.Pagination'
+        description: page 信息
     type: object
   api.LocalVolumeMigrate:
     properties:
@@ -208,7 +205,7 @@ definitions:
         $ref: '#/definitions/api.HAState'
         description: HAState is state for ha replica, replica.Status.State == Ready
           only when HAState is Consistent of nil
-      inuse:
+      inUse:
         description: InUse is one of volume replica's states, which indicates the
           replica is used by a Pod or not
         type: boolean
@@ -242,17 +239,17 @@ definitions:
     type: object
   api.NodeDiskListByPool:
     properties:
-      localDiskListByNodes:
-        description: LocalDiskListByNodes
+      localDisks:
+        description: localDisks 节点磁盘列表
         items:
-          $ref: '#/definitions/api.LocalDiskListByNode'
+          $ref: '#/definitions/api.LocalDisk'
         type: array
+      nodeName:
+        description: nodeName 节点名称
+        type: string
       page:
-        description: page
-        type: integer
-      pageSize:
-        description: pageSize
-        type: integer
+        $ref: '#/definitions/api.Pagination'
+        description: page 信息
       storagePoolName:
         description: StoragePoolName 存储池名称
         type: string
@@ -308,6 +305,29 @@ definitions:
           $ref: '#/definitions/api.Operation'
         type: array
     type: object
+  api.Pagination:
+    properties:
+      page:
+        description: 当前页索引，从 1 开始，为 0 时，会自动重置为默认值 constants.DefaultPage
+        type: integer
+      page_size:
+        description: |-
+          每页数据量，为 -1 时表示查询全部，为 0 时会重置为默认值
+          constants.DefaultPageSize
+        type: integer
+      pages:
+        description: 总页数
+        type: integer
+      search:
+        description: 搜索关键字，支持模糊搜索,精准匹配和高级搜索.
+        type: string
+      sort:
+        description: 排序规则，支持字符串和数字类型的字段进行排序
+        type: string
+      total:
+        description: 总共有多少条目，请求时可以不用传递
+        type: integer
+    type: object
   api.StorageNode:
     properties:
       driverStatus:
@@ -350,11 +370,8 @@ definitions:
   api.StorageNodeList:
     properties:
       page:
-        description: page
-        type: integer
-      pageSize:
-        description: pageSize
-        type: integer
+        $ref: '#/definitions/api.Pagination'
+        description: page 信息
       storageNodes:
         description: StorageNodes
         items:
@@ -363,6 +380,9 @@ definitions:
     type: object
   api.StorageNodeListByPool:
     properties:
+      page:
+        $ref: '#/definitions/api.Pagination'
+        description: page 信息
       storageNodes:
         description: StorageNodes
         items:
@@ -399,11 +419,8 @@ definitions:
   api.StoragePoolList:
     properties:
       page:
-        description: page
-        type: integer
-      pageSize:
-        description: pageSize
-        type: integer
+        $ref: '#/definitions/api.Pagination'
+        description: page 信息
       storagePools:
         description: storagePools
         items:
@@ -456,7 +473,7 @@ definitions:
       state:
         description: local volume state 状态
         type: string
-      volumegroup:
+      volumeGroup:
         description: VolumeGroup is the group name of the local volumes. It is designed
           for the scheduling and allocating. 磁盘组
         type: string
@@ -464,11 +481,8 @@ definitions:
   api.VolumeList:
     properties:
       page:
-        description: page
-        type: integer
-      pageSize:
-        description: pageSize
-        type: integer
+        $ref: '#/definitions/api.Pagination'
+        description: page 信息
       volumes:
         description: volumes
         items:
@@ -477,9 +491,6 @@ definitions:
     type: object
   api.VolumeMigrateOperation:
     properties:
-      VolumeName:
-        description: VolumeName 迁移卷名称
-        type: string
       endTime:
         description: EndTime 迁移结束时间
         type: string
@@ -498,34 +509,34 @@ definitions:
       targetNode:
         description: TargetNode 迁移目的节点
         type: string
+      volumeName:
+        description: VolumeName 迁移卷名称
+        type: string
     type: object
-  api.VolumeOperation:
+  api.VolumeOperationByVolume:
     properties:
-      VolumeMigrateOperations:
+      volumeMigrateOperations:
         description: VolumeMigrateOperations
         items:
           $ref: '#/definitions/api.VolumeMigrateOperation'
         type: array
-      page:
-        description: page
-        type: integer
-      pageSize:
-        description: pageSize
-        type: integer
       volumeName:
-        description: volume name
+        description: VolumeName
         type: string
     type: object
-  api.VolumeOperationList:
+  api.VolumeOperationListByNode:
     properties:
-      VolumeOperations:
-        description: VolumeOperations
-        items:
-          $ref: '#/definitions/api.VolumeOperation'
-        type: array
       nodeName:
         description: node name
         type: string
+      page:
+        $ref: '#/definitions/api.Pagination'
+        description: page 信息
+      volumeMigrateOperations:
+        description: VolumeOperations
+        items:
+          $ref: '#/definitions/api.VolumeMigrateOperation'
+        type: array
     type: object
   api.VolumeReplica:
     properties:
@@ -721,6 +732,16 @@ paths:
         in: query
         name: Name
         type: string
+      - description: page
+        in: query
+        name: Page
+        required: true
+        type: integer
+      - description: pageSize
+        in: query
+        name: PageSize
+        required: true
+        type: integer
       produces:
       - application/json
       responses:
@@ -762,6 +783,16 @@ paths:
         name: NodeName
         required: true
         type: string
+      - description: page
+        in: query
+        name: Page
+        required: true
+        type: integer
+      - description: pageSize
+        in: query
+        name: PageSize
+        required: true
+        type: integer
       produces:
       - application/json
       responses:
@@ -783,13 +814,23 @@ paths:
         name: NodeName
         required: true
         type: string
+      - description: page
+        in: query
+        name: Page
+        required: true
+        type: integer
+      - description: pageSize
+        in: query
+        name: PageSize
+        required: true
+        type: integer
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/api.VolumeOperationList'
+            $ref: '#/definitions/api.VolumeOperationListByNode'
       summary: 摘要 获取指定节点数据卷迁移任务列表
       tags:
       - Node
@@ -803,6 +844,16 @@ paths:
         in: query
         name: Name
         type: string
+      - description: page
+        in: query
+        name: Page
+        required: true
+        type: integer
+      - description: pageSize
+        in: query
+        name: PageSize
+        required: true
+        type: integer
       produces:
       - application/json
       responses:
@@ -845,6 +896,16 @@ paths:
         name: StoragePoolName
         required: true
         type: string
+      - description: page
+        in: query
+        name: Page
+        required: true
+        type: integer
+      - description: pageSize
+        in: query
+        name: PageSize
+        required: true
+        type: integer
       produces:
       - application/json
       responses:
@@ -871,6 +932,16 @@ paths:
         name: StoragePoolName
         required: true
         type: string
+      - description: page
+        in: query
+        name: Page
+        required: true
+        type: integer
+      - description: pageSize
+        in: query
+        name: PageSize
+        required: true
+        type: integer
       produces:
       - application/json
       responses:
@@ -881,26 +952,6 @@ paths:
       summary: 摘要 获取指定存储池指定存储节点磁盘列表信息
       tags:
       - Pool
-  /volumes/volumeoperations:
-    get:
-      consumes:
-      - application/json
-      description: list VolumeOperations
-      parameters:
-      - description: name
-        in: query
-        name: Name
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 成功
-          schema:
-            $ref: '#/definitions/api.VolumeOperationList'
-      summary: 摘要 获取数据卷操作记录列表信息
-      tags:
-      - Volume
   /volumes/volumeoperations/:volumename:
     get:
       consumes:
@@ -918,7 +969,7 @@ paths:
         "200":
           description: 成功
           schema:
-            $ref: '#/definitions/api.VolumeOperation'
+            $ref: '#/definitions/api.VolumeOperationByVolume'
       summary: 摘要 获取指定数据卷操作记录信息（目前仅包含迁移运维操作）
       tags:
       - Volume
@@ -995,6 +1046,16 @@ paths:
         in: query
         name: Name
         type: string
+      - description: page
+        in: query
+        name: Page
+        required: true
+        type: integer
+      - description: pageSize
+        in: query
+        name: PageSize
+        required: true
+        type: integer
       produces:
       - application/json
       responses:

@@ -46,7 +46,6 @@ func CollectRoute(r *gin.Engine) *gin.Engine {
 	volumeRoutes.GET("/volumereplicas/:volumename", volumeController.VolumeReplicasGet)
 	volumeRoutes.GET("/volumereplicas/yamls/:volumereplicaname", volumeController.VolumeReplicaYamlGet)
 
-	volumeRoutes.GET("/volumeoperations", volumeController.VolumeOperationList)
 	volumeRoutes.GET("/volumeoperations/:volumename", volumeController.VolumeOperationGet)
 	volumeRoutes.GET("/volumeoperations/yamls/:operationname", volumeController.VolumeOperationYamlGet)
 
