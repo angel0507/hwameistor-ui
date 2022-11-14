@@ -10,7 +10,6 @@ type INodeController interface {
 	StorageNodeGet(ctx *gin.Context)
 	StorageNodeList(ctx *gin.Context)
 	StorageNodeMigrateGet(ctx *gin.Context)
-
 	StorageNodeDisksList(ctx *gin.Context)
 }
 
@@ -54,6 +53,8 @@ func (n *NodeController) StorageNodeGet(ctx *gin.Context) {
 // @Description list StorageNode
 // @Tags        Node
 // @Param       Name query string false "name"
+// @Param       Page query int32 true "page"
+// @Param       PageSize query int32 true "pageSize"
 // @Accept      json
 // @Produce     json
 // @Success     200 {object} api.StorageNodeList
@@ -80,9 +81,11 @@ func (n *NodeController) StorageNodeList(ctx *gin.Context) {
 // @Description get StorageNodeMigrate
 // @Tags        Node
 // @Param       NodeName query string true "nodeName"
+// @Param       Page query int32 true "page"
+// @Param       PageSize query int32 true "pageSize"
 // @Accept      json
 // @Produce     json
-// @Success     200 {object} api.VolumeOperationList
+// @Success     200 {object} api.VolumeOperationListByNode
 // @Router      /nodes/storagenodes/:storagenodename/migrates [get]
 func (n *NodeController) StorageNodeMigrateGet(ctx *gin.Context) {
 
@@ -93,6 +96,8 @@ func (n *NodeController) StorageNodeMigrateGet(ctx *gin.Context) {
 // @Description list StorageNodeDisks
 // @Tags        Node
 // @Param       NodeName query string true "nodeName"
+// @Param       Page query int32 true "page"
+// @Param       PageSize query int32 true "pageSize"
 // @Accept      json
 // @Produce     json
 // @Success     200 {object}  api.LocalDiskListByNode
