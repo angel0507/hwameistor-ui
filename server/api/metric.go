@@ -1,6 +1,8 @@
 package api
 
-import "time"
+import (
+	"time"
+)
 
 type BaseMetric struct {
 	// 高可用卷数目
@@ -96,4 +98,81 @@ type Operation struct {
 // 操作记录列表
 type OperationMetric struct {
 	OperationList []Operation `json:"operationList"`
+}
+
+type StorageCapacityCollection struct {
+	// 总容量
+	TotalCapacityBytes int64 `json:"totalCapacityBytes"`
+	// 已使用容量
+	UsedCapacityBytes int64 `json:"usedCapacityBytes"`
+	// 已预留容量
+	ReservedCapacityBytes int64 `json:"reservedCapacityBytes"`
+	// 可使用容量
+	FreeCapacityBytes int64 `json:"freeCapacityBytes"`
+}
+
+type StorageNodesCollection struct {
+	// 总节点数
+	TotalNodesNum int64 `json:"totalNodesNum"`
+	// 纳管节点数
+	ManagedNodesNum int64 `json:"managedNodesNum"`
+}
+
+type VolumeCollection struct {
+	// 本地卷总数
+	TotalVolumesNum int64 `json:"totalVolumesNum"`
+	// 高可用卷
+	HAVolumeNum int64 `json:"HAVolumeNum"`
+	// 非高可用卷
+	NonHAVolumeNum int64 `json:"nonHAVolumeNum"`
+}
+
+type DiskCollection struct {
+	// 磁盘总数
+	TotalDisksNum int64 `json:"totalDisksNum"`
+	// 健康磁盘数目
+	HealthyDiskNum int64 `json:"healthyDiskNum"`
+	// 错误磁盘数目
+	ErrorDiskNum int64 `json:"errorDiskNum"`
+	// 纳管磁盘数目
+	ManagedDiskNum int64 `json:"managedDiskNum"`
+}
+
+type ModuleStatusCollection struct {
+	// 组件状态
+	ModuleStatus map[string]State `json:"moduleStatus"`
+}
+
+type StoragePoolUseCollection struct {
+	// 存储池资源使用
+	StoragePoolUseMap map[string]StoragePoolUse `json:"storagePoolUseMap"`
+}
+
+// 节点存储使用率
+type NodeStorageUseRatio struct {
+	// 节点名字
+	Name string
+	// 总容量
+	TotalCapacityBytes int64
+	// 已使用容量
+	UsedCapacityBytes int64
+	// 存储比率
+	CapacityBytesRatio int64
+}
+
+type NodeStorageUseRatios []*NodeStorageUseRatio
+
+func (p NodeStorageUseRatios) Len() int {
+	return len(p)
+}
+func (p NodeStorageUseRatios) Less(i, j int) bool {
+	return p[i].CapacityBytesRatio < p[j].CapacityBytesRatio
+}
+func (p NodeStorageUseRatios) Swap(i, j int) {
+	p[i], p[j] = p[j], p[i]
+}
+
+type NodeStorageUseCollection struct {
+	// 存储节点资源使用率
+	NodeStorageUseRatios []*NodeStorageUseRatio `json:"nodeStorageUseRatios"`
 }

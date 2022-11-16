@@ -141,7 +141,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/metrics/nodestorageusemetric/:storagepoolclass": {
+        "/metrics/nodestorageusemetric/:StoragePoolClass": {
             "get": {
                 "description": "NodeStorageUseMetric",
                 "consumes": [
@@ -204,7 +204,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/metrics/storagepoolmetric": {
+        "/metrics/storagepoolusemetric": {
             "get": {
                 "description": "StoragePoolMetric",
                 "consumes": [

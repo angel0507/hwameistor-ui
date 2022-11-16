@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/hwameistor/hwameistor-ui/server/manager"
+	"net/http"
 )
 
 type IMetricsController interface {
@@ -36,20 +37,13 @@ func NewMetricsController(m *manager.ServerManager) IMetricsController {
 // @Success     200 {object} api.BaseMetric  "成功"
 // @Router      /metrics/basemetric [get]
 func (v *MetricsController) BaseMetric(ctx *gin.Context) {
-	// 获取path中的name
-	//volumeName := ctx.Params.ByName("name")
-	//
-	//if volumeName == "" {
-	//	ctx.JSON(http.StatusNonAuthoritativeInfo, nil)
-	//	return
-	//}
-	//lv, err := v.m.LocalMetricsController().GetLocalVolume(pkgclient.ObjectKey{Name: volumeName})
-	//if err != nil {
-	//	ctx.JSON(http.StatusNotFound, nil)
-	//}
-	//
-	//volume := api.ToVolumeResource(*lv)
-	//ctx.JSON(http.StatusOK, volume)
+
+	baseCapacity, err := v.m.MetricController().GetBaseMetric()
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, nil)
+	}
+
+	ctx.JSON(http.StatusOK, baseCapacity)
 }
 
 // StoragePoolMetric godoc
@@ -60,24 +54,15 @@ func (v *MetricsController) BaseMetric(ctx *gin.Context) {
 // @Accept      json
 // @Produce     json
 // @Success     200 {object}  api.StoragePoolUseMetric  "成功"
-// @Router      /metrics/storagepoolmetric [get]
+// @Router      /metrics/storagepoolusemetric [get]
 func (v *MetricsController) StoragePoolUseMetric(ctx *gin.Context) {
 
-	//lvs, err := v.m.LocalMetricsController().ListLocalVolume()
-	//if err != nil {
-	//	ctx.JSON(http.StatusNotFound, nil)
-	//}
-	//log.Printf("List lvs = %v", lvs)
-	//
-	//var volums []*api.Volume
-	//for _, lv := range lvs.Items {
-	//	volums = append(volums, api.ToVolumeResource(lv))
-	//}
-	//
-	//var volumeList api.VolumeList
-	//volumeList.Volumes = volums
+	storagePoolUseMetric, err := v.m.MetricController().GetStoragePoolUseMetric()
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, nil)
+	}
 
-	//ctx.JSON(http.StatusOK, volumeList)
+	ctx.JSON(http.StatusOK, storagePoolUseMetric)
 }
 
 // NodeStorageUseMetric godoc
@@ -88,8 +73,23 @@ func (v *MetricsController) StoragePoolUseMetric(ctx *gin.Context) {
 // @Accept      json
 // @Produce     json
 // @Success     200 {object}  api.NodeStorageUseMetric  "成功"
-// @Router      /metrics/nodestorageusemetric/:storagepoolclass [get]
+// @Router      /metrics/nodestorageusemetric/:StoragePoolClass [get]
 func (v *MetricsController) NodeStorageUseMetric(ctx *gin.Context) {
+	// 获取path中的storagePoolClass
+	storagePoolClass := ctx.Query("StoragePoolClass")
+	fmt.Println("NodeStorageUseMetric storagePoolClass = %", storagePoolClass)
+
+	if storagePoolClass == "" {
+		ctx.JSON(http.StatusNonAuthoritativeInfo, nil)
+		return
+	}
+	
+	nodeStorageUseMetric, err := v.m.MetricController().GetNodeStorageUseMetric(storagePoolClass)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, nil)
+	}
+
+	ctx.JSON(http.StatusOK, nodeStorageUseMetric)
 
 }
 
@@ -104,6 +104,12 @@ func (v *MetricsController) NodeStorageUseMetric(ctx *gin.Context) {
 // @Router      /metrics/modulestatusmetric [get]
 func (v *MetricsController) ModuleStatusMetric(ctx *gin.Context) {
 
+	moduleStatusMetric, err := v.m.MetricController().GetModuleStatusMetric()
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, nil)
+	}
+
+	ctx.JSON(http.StatusOK, moduleStatusMetric)
 }
 
 // OperationList godoc
@@ -116,5 +122,10 @@ func (v *MetricsController) ModuleStatusMetric(ctx *gin.Context) {
 // @Success     200 {object}  api.OperationMetric  "成功"
 // @Router      /metrics/operations [get]
 func (v *MetricsController) OperationList(ctx *gin.Context) {
+	operationListMetric, err := v.m.MetricController().OperationListMetric()
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, nil)
+	}
 
+	ctx.JSON(http.StatusOK, operationListMetric)
 }

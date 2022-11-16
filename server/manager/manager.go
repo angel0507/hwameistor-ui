@@ -1,6 +1,7 @@
 package manager
 
 import (
+	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/record"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	mgrpkg "sigs.k8s.io/controller-runtime/pkg/manager"
@@ -17,9 +18,13 @@ type ServerManager struct {
 
 	apiClient client.Client
 
+	clientset *kubernetes.Clientset
+
 	lsnController *hwameistorctr.LocalStorageNodeController
 
 	lvController *hwameistorctr.LocalVolumeController
+
+	mController *hwameistorctr.MetricController
 
 	mgr mgrpkg.Manager
 
@@ -27,14 +32,16 @@ type ServerManager struct {
 }
 
 // NewServerManager
-func NewServerManager(mgr mgrpkg.Manager) (*ServerManager, error) {
+func NewServerManager(mgr mgrpkg.Manager, clientset *kubernetes.Clientset) (*ServerManager, error) {
 	var recorder record.EventRecorder
 	return &ServerManager{
 		nodeName:      utils.GetNodeName(),
 		namespace:     utils.GetNamespace(),
 		apiClient:     mgr.GetClient(),
+		clientset:     clientset,
 		lsnController: hwameistorctr.NewLocalStorageNodeController(mgr.GetClient(), recorder),
 		lvController:  hwameistorctr.NewLocalVolumeController(mgr.GetClient(), recorder),
+		mController:   hwameistorctr.NewMetricController(mgr.GetClient(), clientset, recorder),
 		mgr:           mgr,
 		logger:        log.WithField("Module", "ServerManager"),
 	}, nil
@@ -54,4 +61,13 @@ func (m *ServerManager) VolumeController() *hwameistorctr.LocalVolumeController 
 		m.lvController = hwameistorctr.NewLocalVolumeController(m.mgr.GetClient(), recorder)
 	}
 	return m.lvController
+}
+
+func (m *ServerManager) MetricController() *hwameistorctr.MetricController {
+
+	var recorder record.EventRecorder
+	if m.mController == nil {
+		m.mController = hwameistorctr.NewMetricController(m.mgr.GetClient(), m.clientset, recorder)
+	}
+	return m.mController
 }

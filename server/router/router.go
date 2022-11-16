@@ -3,6 +3,7 @@ package api
 import (
 	"fmt"
 	apisv1alpha1 "github.com/hwameistor/hwameistor/pkg/apis/hwameistor/v1alpha1"
+	"k8s.io/client-go/kubernetes"
 	"os"
 	"time"
 
@@ -33,7 +34,7 @@ func CollectRoute(r *gin.Engine) *gin.Engine {
 	metricsRoutes := v1.Group("/metrics")
 	metricsRoutes.GET("/basemetric", metricsController.BaseMetric)
 	metricsRoutes.GET("/storagepoolusemetric", metricsController.StoragePoolUseMetric)
-	metricsRoutes.GET("/nodestorageusemetric/:storagepoolclass", metricsController.NodeStorageUseMetric)
+	metricsRoutes.GET("/nodestorageusemetric/:StoragePoolClass", metricsController.NodeStorageUseMetric)
 	metricsRoutes.GET("/modulestatusmetric", metricsController.ModuleStatusMetric)
 	metricsRoutes.GET("/operations", metricsController.OperationList)
 
@@ -121,8 +122,13 @@ func BuildServerMgr() *manager.ServerManager {
 		}
 	}()
 
+	uiClientset, err := kubernetes.NewForConfig(cfg)
+	if err != nil {
+		log.WithError(err).Fatal("Failed to create client set")
+	}
+
 	// Create a new manager to provide shared dependencies and start components
-	smgr, err := manager.NewServerManager(mgr)
+	smgr, err := manager.NewServerManager(mgr, uiClientset)
 	if err != nil {
 		log.Error(err, "")
 		os.Exit(1)
