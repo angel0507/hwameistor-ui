@@ -129,7 +129,7 @@
                 }
             }
         },
-        "/metrics/nodestorageusemetric/:storagepoolclass": {
+        "/metrics/nodestorageusemetric/:StoragePoolClass": {
             "get": {
                 "description": "NodeStorageUseMetric",
                 "consumes": [
@@ -192,7 +192,7 @@
                 }
             }
         },
-        "/metrics/storagepoolmetric": {
+        "/metrics/storagepoolusemetric": {
             "get": {
                 "description": "StoragePoolMetric",
                 "consumes": [

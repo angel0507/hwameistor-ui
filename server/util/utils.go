@@ -10,8 +10,10 @@
 package utils
 
 import (
+	"fmt"
 	log "github.com/sirupsen/logrus"
 	"os"
+	"strconv"
 )
 
 // GetNodeName gets the node name from env, else
@@ -35,4 +37,12 @@ func GetNamespace() string {
 	}
 
 	return ns
+}
+
+func DivideOperate(num1, num2 int64) (float64, error) {
+	value, err := strconv.ParseFloat(fmt.Sprintf("%.2f", float64(num1)/float64(num2)), 64)
+	if err != nil {
+		return 0, err
+	}
+	return value, nil
 }

@@ -23,7 +23,7 @@ func main() {
 	docs.SwaggerInfo.Title = "Swagger Example API"
 	docs.SwaggerInfo.Description = "This is a sample hwameistor server."
 	docs.SwaggerInfo.Version = "1.0"
-	docs.SwaggerInfo.BasePath = "/api/v1"
+	docs.SwaggerInfo.BasePath = "/apis/hwameistor.io/v1alpha1"
 	docs.SwaggerInfo.Schemes = []string{"http", "https"}
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))

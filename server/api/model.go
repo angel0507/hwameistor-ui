@@ -77,3 +77,18 @@ type Pagination struct {
 	// 搜索关键字，支持模糊搜索,精准匹配和高级搜索.
 	Search string `protobuf:"bytes,5,opt,name=search,proto3" json:"search,omitempty"`
 }
+
+// disk class
+const (
+	DiskClassNameHDD  = "HDD"
+	DiskClassNameSSD  = "SSD"
+	DiskClassNameNVMe = "NVMe"
+)
+
+// consts
+const (
+	PoolNamePrefix  = "LocalStorage_Pool"
+	PoolNameForHDD  = PoolNamePrefix + DiskClassNameHDD
+	PoolNameForSSD  = PoolNamePrefix + DiskClassNameSSD
+	PoolNameForNVMe = PoolNamePrefix + DiskClassNameNVMe
+)
