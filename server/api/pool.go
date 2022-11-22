@@ -11,14 +11,11 @@ type StoragePool struct {
 	// Supported class: HDD, SSD, NVMe 磁盘类型
 	Class string `json:"class"`
 
-	// HighAvailability 是否高可用
-	HighAvailability bool `json:"highAvailability"`
-
 	// TotalCapacityBytes 存储池对应存储总容量
 	TotalCapacityBytes int64 `json:"totalCapacityBytes"`
 
-	// UsedCapacityBytes 存储池已经使用存储容量
-	UsedCapacityBytes int64 `json:"usedCapacityBytes"`
+	// AllocatedCapacityBytes 存储池已经分配存储容量
+	AllocatedCapacityBytes int64 `json:"allocatedCapacityBytes"`
 
 	// NodesNum 节点数
 	NodeNum int64 `json:"nodesNum"`
@@ -55,4 +52,11 @@ type StorageNodeListByPool struct {
 	StorageNodes []*StorageNode `json:"storageNodes,omitempty"`
 	// page 信息
 	Page *Pagination `json:"page,omitempty"`
+}
+
+type StoragePoolNodesCollection struct {
+	// 纳管节点列表
+	ManagedNodeNames []string `json:"managedNodeNames"`
+	// 存储池信息
+	StoragePool StoragePool `json:"storagePool"`
 }

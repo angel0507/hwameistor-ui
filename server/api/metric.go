@@ -13,16 +13,16 @@ type BaseMetric struct {
 	LocalVolumeNum int64 `json:"localVolumeNum"`
 	// 总容量
 	TotalCapacityBytes int64 `json:"totalCapacityBytes"`
-	// 已使用容量
-	UsedCapacityBytes int64 `json:"usedCapacityBytes"`
+	// 已分配容量
+	AllocatedCapacityBytes int64 `json:"allocatedCapacityBytes"`
 	// 已预留容量
 	ReservedCapacityBytes int64 `json:"reservedCapacityBytes"`
-	// 可使用容量
+	// 可分配容量
 	FreeCapacityBytes int64 `json:"freeCapacityBytes"`
 	// 总磁盘数
 	TotalDiskNum int64 `json:"totalDiskNum"`
-	// 纳管磁盘
-	ClaimedDiskNum int64 `json:"claimedDiskNum"`
+	// 绑定磁盘
+	BoundedDiskNum int64 `json:"boundedDiskNum"`
 	// 健康磁盘
 	HealthyDiskNum int64 `json:"healthyDiskNum"`
 	// 错误磁盘
@@ -39,8 +39,8 @@ type StoragePoolUse struct {
 	Name string `json:"name"`
 	// 总容量
 	TotalCapacityBytes int64 `json:"totalCapacityBytes"`
-	// 已使用容量
-	UsedCapacityBytes int64 `json:"usedCapacityBytes"`
+	// 已分配容量
+	AllocatedCapacityBytes int64 `json:"allocatedCapacityBytes"`
 }
 
 // 存储池资源监控
@@ -54,8 +54,8 @@ type NodeStorageUse struct {
 	Name string `json:"name"`
 	// 总容量
 	TotalCapacityBytes int64 `json:"totalCapacityBytes"`
-	// 已使用容量
-	UsedCapacityBytes int64 `json:"usedCapacityBytes"`
+	// 已分配容量
+	AllocatedCapacityBytes int64 `json:"allocatedCapacityBytes"`
 }
 
 // 节点存储TOP5 使用率监控
@@ -97,14 +97,16 @@ type Operation struct {
 
 // 操作记录列表
 type OperationMetric struct {
-	OperationList []Operation `json:"operationList"`
+	OperationList []Operation `json:"items"`
+	// page 信息
+	Page *Pagination `json:"pagination,omitempty"`
 }
 
 type StorageCapacityCollection struct {
 	// 总容量
 	TotalCapacityBytes int64 `json:"totalCapacityBytes"`
-	// 已使用容量
-	UsedCapacityBytes int64 `json:"usedCapacityBytes"`
+	// 已分配容量
+	AllocatedCapacityBytes int64 `json:"allocatedCapacityBytes"`
 	// 已预留容量
 	ReservedCapacityBytes int64 `json:"reservedCapacityBytes"`
 	// 可使用容量
@@ -134,8 +136,8 @@ type DiskCollection struct {
 	HealthyDiskNum int64 `json:"healthyDiskNum"`
 	// 错误磁盘数目
 	ErrorDiskNum int64 `json:"errorDiskNum"`
-	// 纳管磁盘数目
-	ManagedDiskNum int64 `json:"managedDiskNum"`
+	// 绑定磁盘数目
+	BoundedDiskNum int64 `json:"boundedDiskNum"`
 }
 
 type ModuleStatusCollection struct {
@@ -154,8 +156,8 @@ type NodeStorageUseRatio struct {
 	Name string
 	// 总容量
 	TotalCapacityBytes int64
-	// 已使用容量
-	UsedCapacityBytes int64
+	// 已分配容量
+	AllocatedCapacityBytes int64
 	// 存储比率
 	CapacityBytesRatio int64
 }

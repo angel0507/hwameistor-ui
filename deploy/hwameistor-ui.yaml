@@ -72,6 +72,6 @@ spec:
   - name: backend
     port: 8081
     targetPort: 8081
-    nodePort: 30038
+    nodePort: 30036
     protocol: TCP
 

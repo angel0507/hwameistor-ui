@@ -34,7 +34,7 @@ func CollectRoute(r *gin.Engine) *gin.Engine {
 	metricsRoutes := v1.Group("/metrics")
 	metricsRoutes.GET("/basemetric", metricsController.BaseMetric)
 	metricsRoutes.GET("/storagepoolusemetric", metricsController.StoragePoolUseMetric)
-	metricsRoutes.GET("/nodestorageusemetric/:StoragePoolClass", metricsController.NodeStorageUseMetric)
+	metricsRoutes.GET("/nodestorageusemetric/:storagePoolClass", metricsController.NodeStorageUseMetric)
 	metricsRoutes.GET("/modulestatusmetric", metricsController.ModuleStatusMetric)
 	metricsRoutes.GET("/operations", metricsController.OperationList)
 
@@ -42,28 +42,29 @@ func CollectRoute(r *gin.Engine) *gin.Engine {
 
 	volumeRoutes := v1.Group("/volumes")
 	volumeRoutes.GET("/volumes", volumeController.VolumeList)
-	volumeRoutes.GET("/volumes/:volumename", volumeController.VolumeGet)
+	volumeRoutes.GET("/volumes/:name", volumeController.VolumeGet)
 
-	volumeRoutes.GET("/volumereplicas/:volumename", volumeController.VolumeReplicasGet)
-	volumeRoutes.GET("/volumereplicas/yamls/:volumereplicaname", volumeController.VolumeReplicaYamlGet)
+	volumeRoutes.GET("/volumereplicas/:volumeName", volumeController.VolumeReplicasGet)
+	volumeRoutes.GET("/volumereplica/:volumeReplicaName/yaml", volumeController.VolumeReplicaYamlGet)
 
-	volumeRoutes.GET("/volumeoperations/:volumename", volumeController.VolumeOperationGet)
-	volumeRoutes.GET("/volumeoperations/yamls/:operationname", volumeController.VolumeOperationYamlGet)
+	volumeRoutes.GET("/volumeoperations/:volumeName", volumeController.VolumeOperationGet)
+	volumeRoutes.GET("/volumeoperation/:volumeOperationName/yaml", volumeController.VolumeOperationYamlGet)
 
 	nodeController := controller.NewNodeController(m)
 	nodeRoutes := v1.Group("/nodes")
 	nodeRoutes.GET("/storagenodes", nodeController.StorageNodeList)
-	nodeRoutes.GET("/storagenodes/:storagenodename", nodeController.StorageNodeGet)
-	nodeRoutes.GET("/storagenodes/:storagenodename/migrates", nodeController.StorageNodeMigrateGet)
+	nodeRoutes.GET("/storagenodes/:name", nodeController.StorageNodeGet)
+	nodeRoutes.GET("/storagenode/:nodeName/migrates", nodeController.StorageNodeMigrateGet)
 
-	nodeRoutes.GET("/storagenodes/:storagenodename/disks", nodeController.StorageNodeDisksList)
+	nodeRoutes.GET("/storagenode/:nodeName/disks", nodeController.StorageNodeDisksList)
+	nodeRoutes.GET("/storagenodeoperations/:migrateOperationName/yaml", nodeController.StorageNodeVolumeOperationYamlGet)
 
 	poolController := controller.NewPoolController(m)
 	poolRoutes := v1.Group("/pools")
 	poolRoutes.GET("/storagepools", poolController.StoragePoolList)
-	poolRoutes.GET("/storagepools/:storagepoolname", poolController.StoragePoolGet)
-	poolRoutes.GET("/storagepools/:storagepoolname/nodes/:nodename/disks", poolController.StorageNodeDisksGetByPoolName)
-	poolRoutes.GET("/storagepools/:storagepoolname/nodes", poolController.StorageNodesGetByPoolName)
+	poolRoutes.GET("/storagepools/:name", poolController.StoragePoolGet)
+	poolRoutes.GET("/storagepool/:storagePoolName/nodes/:nodeName/disks", poolController.StorageNodeDisksGetByPoolName)
+	poolRoutes.GET("/storagepool/:storagePoolName/nodes", poolController.StorageNodesGetByPoolName)
 
 	settingController := controller.NewSettingController(m)
 	settingRoutes := v1.Group("/settings")

@@ -10,24 +10,24 @@ type StorageNode struct {
 	Name string `json:"name,omitempty"`
 	// ip 节点IP
 	IP string `json:"ip,omitempty"`
-	// node state 节点状态
-	NodeState string `json:"nodeState,omitempty"`
-	// driver status 驱动状态
+	// node state 节点状态 运行中（Ready）,未就绪（NotReady）,未知（Unknown）
+	NodeState State `json:"nodeState,omitempty"`
+	// driver status 驱动状态  运行中（Ready）,维护中（Maintain）, 离线（Offline）
 	DriverStatus State `json:"driverStatus,omitempty"`
 	// totalDiskCount 总磁盘数
 	TotalDiskCount int64 `json:"totalDiskCount,omitempty"`
-	// usedDiskCount 已纳管磁盘数
+	// usedDiskCount 已绑定磁盘数
 	UsedDiskCount int64 `json:"usedDiskCount,omitempty"`
-	// freeCapacityBytes LSN可分配存储容量
-	FreeCapacityBytes int64 `json:"freeCapacityBytes,omitempty"`
+	//// freeCapacityBytes LSN可分配存储容量
+	//FreeCapacityBytes int64 `json:"freeCapacityBytes,omitempty"`
 	// totalHDDCapacityBytes HDD存储总容量
 	TotalHDDCapacityBytes int64 `json:"totalHDDCapacityBytes,omitempty"`
 	// totalSSDCapacityBytes SSD存储总容量
 	TotalSSDCapacityBytes int64 `json:"totalSSDCapacityBytes,omitempty"`
-	// usedHDDCapacityBytes HDD已经使用存储量
-	UsedHDDCapacityBytes int64 `json:"usedHDDCapacityBytes,omitempty"`
-	// usedSSDCapacityBytes SSD已经使用存储量
-	UsedSSDCapacityBytes int64 `json:"usedSSDCapacityBytes,omitempty"`
+	// allocatedHDDCapacityBytes HDD已经分配存储量
+	AllocatedHDDCapacityBytes int64 `json:"allocatedHDDCapacityBytes,omitempty"`
+	// allocatedSSDCapacityBytes SSD已经分配存储量
+	AllocatedSSDCapacityBytes int64 `json:"allocatedSSDCapacityBytes,omitempty"`
 	// IsRAID 是否Raid
 	IsRAID bool `json:"isRaid,omitempty"`
 }
@@ -37,17 +37,23 @@ type LocalDiskListByNode struct {
 	// nodeName 节点名称
 	NodeName string `json:"nodeName,omitempty"`
 	// localDisks 节点磁盘列表
-	LocalDisks []*LocalDisk `json:"localDisks,omitempty"`
+	LocalDisks []*LocalDisk `json:"items,omitempty"`
 	// page 信息
-	Page *Pagination `json:"page,omitempty"`
+	Page *Pagination `json:"pagination,omitempty"`
 }
 
 // StorageNodeList
 type StorageNodeList struct {
 	// StorageNodes
-	StorageNodes []*StorageNode `json:"storageNodes,omitempty"`
+	StorageNodes []*StorageNode `json:"items,omitempty"`
 	// page 信息
-	Page *Pagination `json:"page,omitempty"`
+	Page *Pagination `json:"pagination,omitempty"`
+}
+
+// YamlData
+type YamlData struct {
+	// yaml data
+	Data string `json:"data,omitempty"`
 }
 
 func ToStorageNodeResource(lsn apisv1alpha1.LocalStorageNode) *StorageNode {

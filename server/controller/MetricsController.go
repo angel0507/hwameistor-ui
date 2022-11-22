@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hwameistor/hwameistor-ui/server/manager"
 	"net/http"
+	"strconv"
 )
 
 type IMetricsController interface {
@@ -29,9 +30,9 @@ func NewMetricsController(m *manager.ServerManager) IMetricsController {
 
 // Get godoc
 // @Summary     摘要 获取基础监控指标
-// @Description get volume
+// @Description get baseMetric
 // @Tags        Metric
-// @Param       Name query string false "name"
+// @Param       name query string false "name"
 // @Accept      application/json
 // @Produce     application/json
 // @Success     200 {object} api.BaseMetric  "成功"
@@ -50,7 +51,7 @@ func (v *MetricsController) BaseMetric(ctx *gin.Context) {
 // @Summary 摘要 获取存储池资源监控指标
 // @Description StoragePoolMetric
 // @Tags        Metric
-// @Param       Name query string false "name"
+// @Param       name query string false "name"
 // @Accept      json
 // @Produce     json
 // @Success     200 {object}  api.StoragePoolUseMetric  "成功"
@@ -69,35 +70,34 @@ func (v *MetricsController) StoragePoolUseMetric(ctx *gin.Context) {
 // @Summary 摘要 获取指定存储池类型节点存储TOP5使用率监控指标
 // @Description NodeStorageUseMetric
 // @Tags        Metric
-// @Param       StoragePoolClass query string true "storagePoolClass"
+// @Param       storagePoolClass path string true "storagePoolClass"
 // @Accept      json
 // @Produce     json
-// @Success     200 {object}  api.NodeStorageUseMetric  "成功"
-// @Router      /metrics/nodestorageusemetric/:StoragePoolClass [get]
+// @Success     200 {object}  api.NodeStorageUseMetric "成功"
+// @Failure     404 {object}  api.NodeStorageUseMetric "失败"
+// @Router      /metrics/nodestorageusemetric/{storagePoolClass} [get]
 func (v *MetricsController) NodeStorageUseMetric(ctx *gin.Context) {
+	fmt.Println("NodeStorageUseMetric start ... ")
 	// 获取path中的storagePoolClass
-	storagePoolClass := ctx.Query("StoragePoolClass")
-	fmt.Println("NodeStorageUseMetric storagePoolClass = %", storagePoolClass)
-
+	storagePoolClass := ctx.Param("storagePoolClass")
 	if storagePoolClass == "" {
 		ctx.JSON(http.StatusNonAuthoritativeInfo, nil)
 		return
 	}
-	
+
 	nodeStorageUseMetric, err := v.m.MetricController().GetNodeStorageUseMetric(storagePoolClass)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, nil)
 	}
 
 	ctx.JSON(http.StatusOK, nodeStorageUseMetric)
-
 }
 
 // ModuleStatusMetric godoc
 // @Summary 摘要 获取组件状态监控指标
-// @Description ModuleStatusMetric
+// @Description ModuleStatusMetric Running (运行中) / NotReady (未就绪)
 // @Tags        Metric
-// @Param       Name query string false "name"
+// @Param       name query string false "name"
 // @Accept      json
 // @Produce     json
 // @Success     200 {object}  api.ModuleStatusMetric  "成功"
@@ -114,15 +114,26 @@ func (v *MetricsController) ModuleStatusMetric(ctx *gin.Context) {
 
 // OperationList godoc
 // @Summary 摘要 获取操作记录列表
-// @Description OperationList
+// @Description OperationList 状态枚举 （Submitted、AddReplica、SyncReplica、PruneReplica、InProgress、Completed、ToBeAborted、Cancelled、Aborted、Failed）
 // @Tags        Metric
-// @Param       Name query string false "name"
+// @Param       name query string false "name"
+// @Param       page query int32 true "page"
+// @Param       pageSize query int32 true "pageSize"
 // @Accept      json
 // @Produce     json
 // @Success     200 {object}  api.OperationMetric  "成功"
 // @Router      /metrics/operations [get]
 func (v *MetricsController) OperationList(ctx *gin.Context) {
-	operationListMetric, err := v.m.MetricController().OperationListMetric()
+
+	// 获取path中的page
+	page := ctx.Query("page")
+	// 获取path中的pageSize
+	pageSize := ctx.Query("pageSize")
+
+	p, _ := strconv.ParseInt(page, 10, 32)
+	ps, _ := strconv.ParseInt(pageSize, 10, 32)
+
+	operationListMetric, err := v.m.MetricController().OperationListMetric(int32(p), int32(ps))
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, nil)
 	}
