@@ -26,6 +26,8 @@ type ServerManager struct {
 
 	mController *hwameistorctr.MetricController
 
+	lspController *hwameistorctr.LocalStoragePoolController
+
 	mgr mgrpkg.Manager
 
 	logger *log.Entry
@@ -39,9 +41,10 @@ func NewServerManager(mgr mgrpkg.Manager, clientset *kubernetes.Clientset) (*Ser
 		namespace:     utils.GetNamespace(),
 		apiClient:     mgr.GetClient(),
 		clientset:     clientset,
-		lsnController: hwameistorctr.NewLocalStorageNodeController(mgr.GetClient(), recorder),
-		lvController:  hwameistorctr.NewLocalVolumeController(mgr.GetClient(), recorder),
+		lsnController: hwameistorctr.NewLocalStorageNodeController(mgr.GetClient(), clientset, recorder),
+		lvController:  hwameistorctr.NewLocalVolumeController(mgr.GetClient(), clientset, recorder),
 		mController:   hwameistorctr.NewMetricController(mgr.GetClient(), clientset, recorder),
+		lspController: hwameistorctr.NewLocalStoragePoolController(mgr.GetClient(), clientset, recorder),
 		mgr:           mgr,
 		logger:        log.WithField("Module", "ServerManager"),
 	}, nil
@@ -50,7 +53,7 @@ func NewServerManager(mgr mgrpkg.Manager, clientset *kubernetes.Clientset) (*Ser
 func (m *ServerManager) StorageNodeController() *hwameistorctr.LocalStorageNodeController {
 	var recorder record.EventRecorder
 	if m.lsnController == nil {
-		m.lsnController = hwameistorctr.NewLocalStorageNodeController(m.mgr.GetClient(), recorder)
+		m.lsnController = hwameistorctr.NewLocalStorageNodeController(m.mgr.GetClient(), m.clientset, recorder)
 	}
 	return m.lsnController
 }
@@ -58,7 +61,7 @@ func (m *ServerManager) StorageNodeController() *hwameistorctr.LocalStorageNodeC
 func (m *ServerManager) VolumeController() *hwameistorctr.LocalVolumeController {
 	var recorder record.EventRecorder
 	if m.lvController == nil {
-		m.lvController = hwameistorctr.NewLocalVolumeController(m.mgr.GetClient(), recorder)
+		m.lvController = hwameistorctr.NewLocalVolumeController(m.mgr.GetClient(), m.clientset, recorder)
 	}
 	return m.lvController
 }
@@ -70,4 +73,13 @@ func (m *ServerManager) MetricController() *hwameistorctr.MetricController {
 		m.mController = hwameistorctr.NewMetricController(m.mgr.GetClient(), m.clientset, recorder)
 	}
 	return m.mController
+}
+
+func (m *ServerManager) StoragePoolController() *hwameistorctr.LocalStoragePoolController {
+
+	var recorder record.EventRecorder
+	if m.lspController == nil {
+		m.lspController = hwameistorctr.NewLocalStoragePoolController(m.mgr.GetClient(), m.clientset, recorder)
+	}
+	return m.lspController
 }

@@ -34,7 +34,7 @@ const docTemplate = `{
                         "type": "string",
                         "description": "enabledrbd",
                         "name": "Enabledrbd",
-                        "in": "query"
+                        "in": "path"
                     }
                 ],
                 "responses": {
@@ -81,7 +81,7 @@ const docTemplate = `{
         },
         "/metrics/basemetric": {
             "get": {
-                "description": "get volume",
+                "description": "get baseMetric",
                 "consumes": [
                     "application/json"
                 ],
@@ -96,7 +96,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "name",
-                        "name": "Name",
+                        "name": "name",
                         "in": "query"
                     }
                 ],
@@ -112,7 +112,7 @@ const docTemplate = `{
         },
         "/metrics/modulestatusmetric": {
             "get": {
-                "description": "ModuleStatusMetric",
+                "description": "ModuleStatusMetric Running (运行中) / NotReady (未就绪)",
                 "consumes": [
                     "application/json"
                 ],
@@ -127,7 +127,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "name",
-                        "name": "Name",
+                        "name": "name",
                         "in": "query"
                     }
                 ],
@@ -141,7 +141,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/metrics/nodestorageusemetric/:StoragePoolClass": {
+        "/metrics/nodestorageusemetric/{storagePoolClass}": {
             "get": {
                 "description": "NodeStorageUseMetric",
                 "consumes": [
@@ -158,8 +158,8 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "storagePoolClass",
-                        "name": "StoragePoolClass",
-                        "in": "query",
+                        "name": "storagePoolClass",
+                        "in": "path",
                         "required": true
                     }
                 ],
@@ -169,13 +169,19 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/api.NodeStorageUseMetric"
                         }
+                    },
+                    "404": {
+                        "description": "失败",
+                        "schema": {
+                            "$ref": "#/definitions/api.NodeStorageUseMetric"
+                        }
                     }
                 }
             }
         },
         "/metrics/operations": {
             "get": {
-                "description": "OperationList",
+                "description": "OperationList 状态枚举 （Submitted、AddReplica、SyncReplica、PruneReplica、InProgress、Completed、ToBeAborted、Cancelled、Aborted、Failed）",
                 "consumes": [
                     "application/json"
                 ],
@@ -190,8 +196,22 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "name",
-                        "name": "Name",
+                        "name": "name",
                         "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "page",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "pageSize",
+                        "name": "pageSize",
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -221,7 +241,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "name",
-                        "name": "Name",
+                        "name": "name",
                         "in": "query"
                     }
                 ],
@@ -235,83 +255,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/nodes/storagenodes": {
-            "get": {
-                "description": "list StorageNode",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Node"
-                ],
-                "summary": "摘要 获取存储节点列表",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "name",
-                        "name": "Name",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "page",
-                        "name": "Page",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "pageSize",
-                        "name": "PageSize",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/api.StorageNodeList"
-                        }
-                    }
-                }
-            }
-        },
-        "/nodes/storagenodes/:storagenodename": {
-            "get": {
-                "description": "get StorageNode",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Node"
-                ],
-                "summary": "摘要 获取指定存储节点",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "name",
-                        "name": "Name",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/api.StorageNode"
-                        }
-                    }
-                }
-            }
-        },
-        "/nodes/storagenodes/:storagenodename/disks": {
+        "/nodes/storagenode/{nodeName}/disks": {
             "get": {
                 "description": "list StorageNodeDisks",
                 "consumes": [
@@ -328,21 +272,21 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "nodeName",
-                        "name": "NodeName",
-                        "in": "query",
+                        "name": "nodeName",
+                        "in": "path",
                         "required": true
                     },
                     {
                         "type": "integer",
                         "description": "page",
-                        "name": "Page",
+                        "name": "page",
                         "in": "query",
                         "required": true
                     },
                     {
                         "type": "integer",
                         "description": "pageSize",
-                        "name": "PageSize",
+                        "name": "pageSize",
                         "in": "query",
                         "required": true
                     }
@@ -357,7 +301,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/nodes/storagenodes/:storagenodename/migrates": {
+        "/nodes/storagenode/{nodeName}/migrates": {
             "get": {
                 "description": "get StorageNodeMigrate",
                 "consumes": [
@@ -374,21 +318,21 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "nodeName",
-                        "name": "NodeName",
-                        "in": "query",
+                        "name": "nodeName",
+                        "in": "path",
                         "required": true
                     },
                     {
                         "type": "integer",
                         "description": "page",
-                        "name": "Page",
+                        "name": "page",
                         "in": "query",
                         "required": true
                     },
                     {
                         "type": "integer",
                         "description": "pageSize",
-                        "name": "PageSize",
+                        "name": "pageSize",
                         "in": "query",
                         "required": true
                     }
@@ -398,6 +342,213 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/api.VolumeOperationListByNode"
+                        }
+                    }
+                }
+            }
+        },
+        "/nodes/storagenodeoperations/{migrateOperationName}/yaml": {
+            "get": {
+                "description": "get StorageNodeVolumeOperationYamlGet",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Node"
+                ],
+                "summary": "摘要 获取节点数据卷操作记录yaml信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "migrateOperationName",
+                        "name": "migrateOperationName",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/api.YamlData"
+                        }
+                    }
+                }
+            }
+        },
+        "/nodes/storagenodes": {
+            "get": {
+                "description": "list StorageNode  驱动状态 [运行中（Ready）,维护中（Maintain）, 离线（Offline)] , 节点状态 [运行中（Ready）,未就绪（NotReady）,未知（Unknown)]",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Node"
+                ],
+                "summary": "摘要 获取存储节点列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "name",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "page",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "pageSize",
+                        "name": "pageSize",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.StorageNodeList"
+                        }
+                    }
+                }
+            }
+        },
+        "/nodes/storagenodes/{name}": {
+            "get": {
+                "description": "get StorageNode 驱动状态 [运行中（Ready）,维护中（Maintain）, 离线（Offline)] , 节点状态 [运行中（Ready）,未就绪（NotReady）,未知（Unknown)]",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Node"
+                ],
+                "summary": "摘要 获取指定存储节点",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "name",
+                        "name": "name",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.StorageNode"
+                        }
+                    }
+                }
+            }
+        },
+        "/pools/storagepool/{storagePoolName}/nodes": {
+            "get": {
+                "description": "get StorageNodesGetByPoolName",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Pool"
+                ],
+                "summary": "摘要 获取指定存储池存储节点列表信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "storagePoolName",
+                        "name": "storagePoolName",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "page",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "pageSize",
+                        "name": "pageSize",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.StorageNodeListByPool"
+                        }
+                    }
+                }
+            }
+        },
+        "/pools/storagepool/{storagePoolName}/nodes/{nodeName}/disks": {
+            "get": {
+                "description": "get StorageNodeDisksGetByPoolName",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Pool"
+                ],
+                "summary": "摘要 获取指定存储池指定存储节点磁盘列表信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "nodeName",
+                        "name": "nodeName",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "storagePoolName",
+                        "name": "storagePoolName",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "page",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "pageSize",
+                        "name": "pageSize",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.NodeDiskListByPool"
                         }
                     }
                 }
@@ -420,20 +571,20 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "name",
-                        "name": "Name",
+                        "name": "name",
                         "in": "query"
                     },
                     {
                         "type": "integer",
                         "description": "page",
-                        "name": "Page",
+                        "name": "page",
                         "in": "query",
                         "required": true
                     },
                     {
                         "type": "integer",
                         "description": "pageSize",
-                        "name": "PageSize",
+                        "name": "pageSize",
                         "in": "query",
                         "required": true
                     }
@@ -448,7 +599,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/pools/storagepools/:storagepoolname": {
+        "/pools/storagepools/{name}": {
             "get": {
                 "description": "get Pool",
                 "consumes": [
@@ -465,8 +616,8 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "name",
-                        "name": "Name",
-                        "in": "query",
+                        "name": "name",
+                        "in": "path",
                         "required": true
                     }
                 ],
@@ -480,9 +631,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/pools/storagepools/:storagepoolname/nodes": {
+        "/volumes/volumeoperation/{volumeOperationName}/yaml": {
             "get": {
-                "description": "get StorageNodesGetByPoolName",
+                "description": "get VolumeOperationYamlGet",
                 "consumes": [
                     "application/json"
                 ],
@@ -490,96 +641,29 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Pool"
+                    "Volume"
                 ],
-                "summary": "摘要 获取指定存储池存储节点列表信息",
+                "summary": "摘要 获取数据卷操作记录yaml信息",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "storagePoolName",
-                        "name": "StoragePoolName",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "page",
-                        "name": "Page",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "pageSize",
-                        "name": "PageSize",
-                        "in": "query",
+                        "description": "volumeOperationName",
+                        "name": "volumeOperationName",
+                        "in": "path",
                         "required": true
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "成功",
                         "schema": {
-                            "$ref": "#/definitions/api.StorageNodeListByPool"
+                            "$ref": "#/definitions/api.YamlData"
                         }
                     }
                 }
             }
         },
-        "/pools/storagepools/:storagepoolname/nodes/:nodename/disks": {
-            "get": {
-                "description": "get StorageNodeDisksGetByPoolName",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Pool"
-                ],
-                "summary": "摘要 获取指定存储池指定存储节点磁盘列表信息",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "nodeName",
-                        "name": "NodeName",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "storagePoolName",
-                        "name": "StoragePoolName",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "page",
-                        "name": "Page",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "pageSize",
-                        "name": "PageSize",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/api.NodeDiskListByPool"
-                        }
-                    }
-                }
-            }
-        },
-        "/volumes/volumeoperations/:volumename": {
+        "/volumes/volumeoperations/{volumeName}": {
             "get": {
                 "description": "get VolumeOperation",
                 "consumes": [
@@ -596,8 +680,8 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "volumeName",
-                        "name": "VolumeName",
-                        "in": "query",
+                        "name": "volumeName",
+                        "in": "path",
                         "required": true
                     }
                 ],
@@ -611,9 +695,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/volumes/volumeoperations/yamls/:operationname": {
+        "/volumes/volumereplica/{volumeReplicaName}/yaml": {
             "get": {
-                "description": "get VolumeOperationYamlGet",
+                "description": "get VolumeReplicaYaml",
                 "consumes": [
                     "application/json"
                 ],
@@ -623,13 +707,13 @@ const docTemplate = `{
                 "tags": [
                     "Volume"
                 ],
-                "summary": "摘要 获取数据卷操作记录yaml信息",
+                "summary": "摘要 查看指定数据卷副本yaml信息",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "name",
-                        "name": "Name",
-                        "in": "query",
+                        "description": "volumeReplicaName",
+                        "name": "volumeReplicaName",
+                        "in": "path",
                         "required": true
                     }
                 ],
@@ -637,13 +721,13 @@ const docTemplate = `{
                     "200": {
                         "description": "成功",
                         "schema": {
-                            "$ref": "#/definitions/api.LocalVolumeMigrate"
+                            "$ref": "#/definitions/api.YamlData"
                         }
                     }
                 }
             }
         },
-        "/volumes/volumereplicas/:volumename": {
+        "/volumes/volumereplicas/{volumeName}": {
             "get": {
                 "description": "list volumes",
                 "consumes": [
@@ -660,8 +744,8 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "volumeName",
-                        "name": "VolumeName",
-                        "in": "query",
+                        "name": "volumeName",
+                        "in": "path",
                         "required": true
                     }
                 ],
@@ -670,38 +754,6 @@ const docTemplate = `{
                         "description": "成功",
                         "schema": {
                             "$ref": "#/definitions/api.VolumeReplicaList"
-                        }
-                    }
-                }
-            }
-        },
-        "/volumes/volumereplicas/yamls/:volumereplicaname": {
-            "get": {
-                "description": "get VolumeReplicaYaml",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Volume"
-                ],
-                "summary": "摘要 查看指定数据卷副本yaml信息",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "name",
-                        "name": "Name",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "成功",
-                        "schema": {
-                            "$ref": "#/definitions/api.LocalVolumeReplica"
                         }
                     }
                 }
@@ -724,20 +776,20 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "name",
-                        "name": "Name",
+                        "name": "name",
                         "in": "query"
                     },
                     {
                         "type": "integer",
                         "description": "page",
-                        "name": "Page",
+                        "name": "page",
                         "in": "query",
                         "required": true
                     },
                     {
                         "type": "integer",
                         "description": "pageSize",
-                        "name": "PageSize",
+                        "name": "pageSize",
                         "in": "query",
                         "required": true
                     }
@@ -752,7 +804,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/volumes/volumes/:volumename": {
+        "/volumes/volumes/{name}": {
             "get": {
                 "description": "get Volume",
                 "consumes": [
@@ -769,8 +821,8 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "name",
-                        "name": "Name",
-                        "in": "query",
+                        "name": "name",
+                        "in": "path",
                         "required": true
                     }
                 ],
@@ -789,8 +841,12 @@ const docTemplate = `{
         "api.BaseMetric": {
             "type": "object",
             "properties": {
-                "claimedDiskNum": {
-                    "description": "纳管磁盘",
+                "allocatedCapacityBytes": {
+                    "description": "已分配容量",
+                    "type": "integer"
+                },
+                "boundedDiskNum": {
+                    "description": "绑定磁盘",
                     "type": "integer"
                 },
                 "claimedNodeNum": {
@@ -798,7 +854,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "freeCapacityBytes": {
-                    "description": "可使用容量",
+                    "description": "可分配容量",
                     "type": "integer"
                 },
                 "healthyDiskNum": {
@@ -836,10 +892,6 @@ const docTemplate = `{
                 "unHealthyDiskNum": {
                     "description": "错误磁盘",
                     "type": "integer"
-                },
-                "usedCapacityBytes": {
-                    "description": "已使用容量",
-                    "type": "integer"
                 }
             }
         },
@@ -854,19 +906,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "version": {
-                    "type": "string"
-                }
-            }
-        },
-        "api.HAState": {
-            "type": "object",
-            "properties": {
-                "reason": {
-                    "description": "Reason is why this state happened",
-                    "type": "string"
-                },
-                "state": {
-                    "description": "Consistent, Inconsistent, replica is ready only when consistent",
                     "type": "string"
                 }
             }
@@ -907,7 +946,7 @@ const docTemplate = `{
         "api.LocalDiskListByNode": {
             "type": "object",
             "properties": {
-                "localDisks": {
+                "items": {
                     "description": "localDisks 节点磁盘列表",
                     "type": "array",
                     "items": {
@@ -918,171 +957,9 @@ const docTemplate = `{
                     "description": "nodeName 节点名称",
                     "type": "string"
                 },
-                "page": {
+                "pagination": {
                     "description": "page 信息",
                     "$ref": "#/definitions/api.Pagination"
-                }
-            }
-        },
-        "api.LocalVolumeMigrate": {
-            "type": "object",
-            "properties": {
-                "kind": {
-                    "type": "string"
-                },
-                "metadata": {
-                    "type": "object",
-                    "properties": {
-                        "name": {
-                            "type": "string"
-                        },
-                        "namespace": {
-                            "type": "string"
-                        }
-                    }
-                },
-                "spec": {
-                    "$ref": "#/definitions/api.LocalVolumeMigrateSpec"
-                },
-                "status": {
-                    "$ref": "#/definitions/api.LocalVolumeMigrateStatus"
-                }
-            }
-        },
-        "api.LocalVolumeMigrateSpec": {
-            "type": "object",
-            "properties": {
-                "abort": {
-                    "description": "abort",
-                    "type": "boolean"
-                },
-                "migrateAllVols": {
-                    "description": "migrateAllVols",
-                    "type": "boolean"
-                },
-                "sourceNode": {
-                    "description": "sourceNode",
-                    "type": "string"
-                },
-                "targetNodesSuggested": {
-                    "description": "targetNodesSuggested",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "volumeName": {
-                    "description": "volumeName",
-                    "type": "string"
-                }
-            }
-        },
-        "api.LocalVolumeMigrateStatus": {
-            "type": "object",
-            "properties": {
-                "message": {
-                    "description": "error message to describe some states",
-                    "type": "string"
-                },
-                "originalReplicaNumber": {
-                    "description": "record the volume's replica number, it will be set internally",
-                    "type": "integer"
-                },
-                "state": {
-                    "description": "State of the operation, e.g. submitted, started, completed, abort, ...",
-                    "type": "string"
-                },
-                "targetNode": {
-                    "description": "record the node where the specified replica is migrated to",
-                    "type": "string"
-                }
-            }
-        },
-        "api.LocalVolumeReplica": {
-            "type": "object",
-            "properties": {
-                "kind": {
-                    "type": "string"
-                },
-                "metadata": {
-                    "type": "object",
-                    "properties": {
-                        "name": {
-                            "type": "string"
-                        },
-                        "namespace": {
-                            "type": "string"
-                        }
-                    }
-                },
-                "spec": {
-                    "$ref": "#/definitions/api.LocalVolumeReplicaSpec"
-                },
-                "status": {
-                    "$ref": "#/definitions/api.LocalVolumeReplicaStatus"
-                }
-            }
-        },
-        "api.LocalVolumeReplicaSpec": {
-            "type": "object",
-            "properties": {
-                "delete": {
-                    "type": "boolean"
-                },
-                "nodeName": {
-                    "description": "NodeName is the assigned node where the volume replica is located",
-                    "type": "string"
-                },
-                "poolName": {
-                    "description": "PoolName is the name of the storage pool, e.g. LocalStorage_PoolHDD, LocalStorage_PoolSSD, etc..",
-                    "type": "string"
-                },
-                "requiredCapacityBytes": {
-                    "type": "integer"
-                },
-                "volumeName": {
-                    "description": "VolumeName is the name of the volume, e.g. pvc-fbf3ffc3-66db-4dae-9032-bda3c61b8f85",
-                    "type": "string"
-                }
-            }
-        },
-        "api.LocalVolumeReplicaStatus": {
-            "type": "object",
-            "properties": {
-                "allocatedCapacityBytes": {
-                    "description": "AllocatedCapacityBytes is the real allocated capacity in bytes",
-                    "type": "integer"
-                },
-                "devPath": {
-                    "description": "DevicePath is a link path of the StoragePath of the volume replica,\ne.g. /dev/LocalStorage_PoolHDD/pvc-fbf3ffc3-66db-4dae-9032-bda3c61b8f85",
-                    "type": "string"
-                },
-                "disks": {
-                    "description": "Disks is a list of physical disks where the volume replica is spread cross, especially for striped LVM volume replica",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "haState": {
-                    "description": "HAState is state for ha replica, replica.Status.State == Ready only when HAState is Consistent of nil",
-                    "$ref": "#/definitions/api.HAState"
-                },
-                "inUse": {
-                    "description": "InUse is one of volume replica's states, which indicates the replica is used by a Pod or not",
-                    "type": "boolean"
-                },
-                "state": {
-                    "description": "State is the phase of volume replica, e.g. Creating, Ready, NotReady, ToBeDeleted, Deleted",
-                    "type": "string"
-                },
-                "storagePath": {
-                    "description": "StoragePath is a real path of the volume replica, like /dev/sdg.",
-                    "type": "string"
-                },
-                "synced": {
-                    "description": "Synced is the sync state of the volume replica, which is important in HA volume",
-                    "type": "boolean"
                 }
             }
         },
@@ -1137,16 +1014,16 @@ const docTemplate = `{
         "api.NodeStorageUse": {
             "type": "object",
             "properties": {
+                "allocatedCapacityBytes": {
+                    "description": "已分配容量",
+                    "type": "integer"
+                },
                 "name": {
                     "description": "存储节点名字",
                     "type": "string"
                 },
                 "totalCapacityBytes": {
                     "description": "总容量",
-                    "type": "integer"
-                },
-                "usedCapacityBytes": {
-                    "description": "已使用容量",
                     "type": "integer"
                 }
             }
@@ -1199,11 +1076,15 @@ const docTemplate = `{
         "api.OperationMetric": {
             "type": "object",
             "properties": {
-                "operationList": {
+                "items": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/api.Operation"
                     }
+                },
+                "pagination": {
+                    "description": "page 信息",
+                    "$ref": "#/definitions/api.Pagination"
                 }
             }
         },
@@ -1214,21 +1095,13 @@ const docTemplate = `{
                     "description": "当前页索引，从 1 开始，为 0 时，会自动重置为默认值 constants.DefaultPage",
                     "type": "integer"
                 },
-                "page_size": {
+                "pageSize": {
                     "description": "每页数据量，为 -1 时表示查询全部，为 0 时会重置为默认值\nconstants.DefaultPageSize",
                     "type": "integer"
                 },
                 "pages": {
                     "description": "总页数",
                     "type": "integer"
-                },
-                "search": {
-                    "description": "搜索关键字，支持模糊搜索,精准匹配和高级搜索.",
-                    "type": "string"
-                },
-                "sort": {
-                    "description": "排序规则，支持字符串和数字类型的字段进行排序",
-                    "type": "string"
                 },
                 "total": {
                     "description": "总共有多少条目，请求时可以不用传递",
@@ -1239,13 +1112,17 @@ const docTemplate = `{
         "api.StorageNode": {
             "type": "object",
             "properties": {
-                "driverStatus": {
-                    "description": "driver status 驱动状态",
-                    "type": "string"
-                },
-                "freeCapacityBytes": {
-                    "description": "freeCapacityBytes LSN可分配存储容量",
+                "allocatedHDDCapacityBytes": {
+                    "description": "allocatedHDDCapacityBytes HDD已经分配存储量",
                     "type": "integer"
+                },
+                "allocatedSSDCapacityBytes": {
+                    "description": "allocatedSSDCapacityBytes SSD已经分配存储量",
+                    "type": "integer"
+                },
+                "driverStatus": {
+                    "description": "driver status 驱动状态  运行中（Ready）,维护中（Maintain）, 离线（Offline）",
+                    "type": "string"
                 },
                 "ip": {
                     "description": "ip 节点IP",
@@ -1260,7 +1137,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "nodeState": {
-                    "description": "node state 节点状态",
+                    "description": "node state 节点状态 运行中（Ready）,未就绪（NotReady）,未知（Unknown）",
                     "type": "string"
                 },
                 "totalDiskCount": {
@@ -1268,7 +1145,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "totalHDDCapacityBytes": {
-                    "description": "totalHDDCapacityBytes HDD存储总容量",
+                    "description": "// freeCapacityBytes LSN可分配存储容量\nFreeCapacityBytes int64 ` + "`" + `json:\"freeCapacityBytes,omitempty\"` + "`" + `\ntotalHDDCapacityBytes HDD存储总容量",
                     "type": "integer"
                 },
                 "totalSSDCapacityBytes": {
@@ -1276,15 +1153,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "usedDiskCount": {
-                    "description": "usedDiskCount 已纳管磁盘数",
-                    "type": "integer"
-                },
-                "usedHDDCapacityBytes": {
-                    "description": "usedHDDCapacityBytes HDD已经使用存储量",
-                    "type": "integer"
-                },
-                "usedSSDCapacityBytes": {
-                    "description": "usedSSDCapacityBytes SSD已经使用存储量",
+                    "description": "usedDiskCount 已绑定磁盘数",
                     "type": "integer"
                 }
             }
@@ -1292,16 +1161,16 @@ const docTemplate = `{
         "api.StorageNodeList": {
             "type": "object",
             "properties": {
-                "page": {
-                    "description": "page 信息",
-                    "$ref": "#/definitions/api.Pagination"
-                },
-                "storageNodes": {
+                "items": {
                     "description": "StorageNodes",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/api.StorageNode"
                     }
+                },
+                "pagination": {
+                    "description": "page 信息",
+                    "$ref": "#/definitions/api.Pagination"
                 }
             }
         },
@@ -1328,6 +1197,10 @@ const docTemplate = `{
         "api.StoragePool": {
             "type": "object",
             "properties": {
+                "allocatedCapacityBytes": {
+                    "description": "AllocatedCapacityBytes 存储池已经分配存储容量",
+                    "type": "integer"
+                },
                 "class": {
                     "description": "Supported class: HDD, SSD, NVMe 磁盘类型",
                     "type": "string"
@@ -1335,10 +1208,6 @@ const docTemplate = `{
                 "createTime": {
                     "description": "createTime 创建时间",
                     "type": "string"
-                },
-                "highAvailability": {
-                    "description": "HighAvailability 是否高可用",
-                    "type": "boolean"
                 },
                 "name": {
                     "description": "Supported pool name: HDD_POOL, SSD_POOL, NVMe_POOL 存储池名称",
@@ -1350,10 +1219,6 @@ const docTemplate = `{
                 },
                 "totalCapacityBytes": {
                     "description": "TotalCapacityBytes 存储池对应存储总容量",
-                    "type": "integer"
-                },
-                "usedCapacityBytes": {
-                    "description": "UsedCapacityBytes 存储池已经使用存储容量",
                     "type": "integer"
                 }
             }
@@ -1377,16 +1242,16 @@ const docTemplate = `{
         "api.StoragePoolUse": {
             "type": "object",
             "properties": {
+                "allocatedCapacityBytes": {
+                    "description": "已分配容量",
+                    "type": "integer"
+                },
                 "name": {
                     "description": "存储池名字",
                     "type": "string"
                 },
                 "totalCapacityBytes": {
                     "description": "总容量",
-                    "type": "integer"
-                },
-                "usedCapacityBytes": {
-                    "description": "已使用容量",
                     "type": "integer"
                 }
             }
@@ -1446,16 +1311,16 @@ const docTemplate = `{
         "api.VolumeList": {
             "type": "object",
             "properties": {
-                "page": {
-                    "description": "page 信息",
-                    "$ref": "#/definitions/api.Pagination"
-                },
-                "volumes": {
+                "items": {
                     "description": "volumes",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/api.Volume"
                     }
+                },
+                "pagination": {
+                    "description": "page 信息",
+                    "$ref": "#/definitions/api.Pagination"
                 }
             }
         },
@@ -1495,7 +1360,7 @@ const docTemplate = `{
         "api.VolumeOperationByVolume": {
             "type": "object",
             "properties": {
-                "volumeMigrateOperations": {
+                "items": {
                     "description": "VolumeMigrateOperations",
                     "type": "array",
                     "items": {
@@ -1511,20 +1376,20 @@ const docTemplate = `{
         "api.VolumeOperationListByNode": {
             "type": "object",
             "properties": {
-                "nodeName": {
-                    "description": "node name",
-                    "type": "string"
-                },
-                "page": {
-                    "description": "page 信息",
-                    "$ref": "#/definitions/api.Pagination"
-                },
-                "volumeMigrateOperations": {
+                "items": {
                     "description": "VolumeOperations",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/api.VolumeMigrateOperation"
                     }
+                },
+                "nodeName": {
+                    "description": "node name",
+                    "type": "string"
+                },
+                "pagination": {
+                    "description": "page 信息",
+                    "$ref": "#/definitions/api.Pagination"
                 }
             }
         },
@@ -1574,6 +1439,15 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/api.VolumeReplica"
                     }
+                }
+            }
+        },
+        "api.YamlData": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "description": "yaml data",
+                    "type": "string"
                 }
             }
         }

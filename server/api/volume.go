@@ -45,9 +45,9 @@ type Volume struct {
 // VolumeList
 type VolumeList struct {
 	// volumes
-	Volumes []*Volume `json:"volumes,omitempty"`
+	Volumes []*Volume `json:"items,omitempty"`
 	// page 信息
-	Page *Pagination `json:"page,omitempty"`
+	Page *Pagination `json:"pagination,omitempty"`
 }
 
 // VolumeReplica
@@ -88,9 +88,9 @@ type VolumeOperationListByNode struct {
 	// node name
 	NodeName string `json:"nodeName,omitempty"`
 	// VolumeOperations
-	VolumeMigrateOperations []*VolumeMigrateOperation `json:"volumeMigrateOperations,omitempty"`
+	VolumeMigrateOperations []*VolumeMigrateOperation `json:"items,omitempty"`
 	// page 信息
-	Page *Pagination `json:"page,omitempty"`
+	Page *Pagination `json:"pagination,omitempty"`
 }
 
 // VolumeOperationByVolume
@@ -98,7 +98,7 @@ type VolumeOperationByVolume struct {
 	// VolumeName
 	VolumeName string `json:"volumeName,omitempty"`
 	// VolumeMigrateOperations
-	VolumeMigrateOperations []*VolumeMigrateOperation `json:"volumeMigrateOperations,omitempty"`
+	VolumeMigrateOperations []*VolumeMigrateOperation `json:"items,omitempty"`
 }
 
 // VolumeOperationByMigrate

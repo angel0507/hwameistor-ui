@@ -46,3 +46,28 @@ func DivideOperate(num1, num2 int64) (float64, error) {
 	}
 	return value, nil
 }
+
+// nolint
+func DataPatination[T any](origin []T, page, pageSize int32) []T {
+	if pageSize == -1 {
+		return origin
+	}
+
+	if page < 1 {
+		return make([]T, 0)
+	}
+
+	total := int32(len(origin))
+	start := (page - 1) * pageSize
+	end := page * pageSize
+
+	if start > total {
+		return make([]T, 0)
+	}
+
+	if end > total {
+		end = total
+	}
+
+	return origin[start:end]
+}

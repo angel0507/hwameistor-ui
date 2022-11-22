@@ -1,14 +1,17 @@
 definitions:
   api.BaseMetric:
     properties:
-      claimedDiskNum:
-        description: 纳管磁盘
+      allocatedCapacityBytes:
+        description: 已分配容量
+        type: integer
+      boundedDiskNum:
+        description: 绑定磁盘
         type: integer
       claimedNodeNum:
         description: 纳管节点数
         type: integer
       freeCapacityBytes:
-        description: 可使用容量
+        description: 可分配容量
         type: integer
       healthyDiskNum:
         description: 健康磁盘
@@ -37,9 +40,6 @@ definitions:
       unHealthyDiskNum:
         description: 错误磁盘
         type: integer
-      usedCapacityBytes:
-        description: 已使用容量
-        type: integer
     type: object
   api.DrbdEnableSetting:
     properties:
@@ -50,15 +50,6 @@ definitions:
           状态'
         type: string
       version:
-        type: string
-    type: object
-  api.HAState:
-    properties:
-      reason:
-        description: Reason is why this state happened
-        type: string
-      state:
-        description: Consistent, Inconsistent, replica is ready only when consistent
         type: string
     type: object
   api.LocalDisk:
@@ -88,7 +79,7 @@ definitions:
     type: object
   api.LocalDiskListByNode:
     properties:
-      localDisks:
+      items:
         description: localDisks 节点磁盘列表
         items:
           $ref: '#/definitions/api.LocalDisk'
@@ -96,130 +87,9 @@ definitions:
       nodeName:
         description: nodeName 节点名称
         type: string
-      page:
+      pagination:
         $ref: '#/definitions/api.Pagination'
         description: page 信息
-    type: object
-  api.LocalVolumeMigrate:
-    properties:
-      kind:
-        type: string
-      metadata:
-        properties:
-          name:
-            type: string
-          namespace:
-            type: string
-        type: object
-      spec:
-        $ref: '#/definitions/api.LocalVolumeMigrateSpec'
-      status:
-        $ref: '#/definitions/api.LocalVolumeMigrateStatus'
-    type: object
-  api.LocalVolumeMigrateSpec:
-    properties:
-      abort:
-        description: abort
-        type: boolean
-      migrateAllVols:
-        description: migrateAllVols
-        type: boolean
-      sourceNode:
-        description: sourceNode
-        type: string
-      targetNodesSuggested:
-        description: targetNodesSuggested
-        items:
-          type: string
-        type: array
-      volumeName:
-        description: volumeName
-        type: string
-    type: object
-  api.LocalVolumeMigrateStatus:
-    properties:
-      message:
-        description: error message to describe some states
-        type: string
-      originalReplicaNumber:
-        description: record the volume's replica number, it will be set internally
-        type: integer
-      state:
-        description: State of the operation, e.g. submitted, started, completed, abort,
-          ...
-        type: string
-      targetNode:
-        description: record the node where the specified replica is migrated to
-        type: string
-    type: object
-  api.LocalVolumeReplica:
-    properties:
-      kind:
-        type: string
-      metadata:
-        properties:
-          name:
-            type: string
-          namespace:
-            type: string
-        type: object
-      spec:
-        $ref: '#/definitions/api.LocalVolumeReplicaSpec'
-      status:
-        $ref: '#/definitions/api.LocalVolumeReplicaStatus'
-    type: object
-  api.LocalVolumeReplicaSpec:
-    properties:
-      delete:
-        type: boolean
-      nodeName:
-        description: NodeName is the assigned node where the volume replica is located
-        type: string
-      poolName:
-        description: PoolName is the name of the storage pool, e.g. LocalStorage_PoolHDD,
-          LocalStorage_PoolSSD, etc..
-        type: string
-      requiredCapacityBytes:
-        type: integer
-      volumeName:
-        description: VolumeName is the name of the volume, e.g. pvc-fbf3ffc3-66db-4dae-9032-bda3c61b8f85
-        type: string
-    type: object
-  api.LocalVolumeReplicaStatus:
-    properties:
-      allocatedCapacityBytes:
-        description: AllocatedCapacityBytes is the real allocated capacity in bytes
-        type: integer
-      devPath:
-        description: |-
-          DevicePath is a link path of the StoragePath of the volume replica,
-          e.g. /dev/LocalStorage_PoolHDD/pvc-fbf3ffc3-66db-4dae-9032-bda3c61b8f85
-        type: string
-      disks:
-        description: Disks is a list of physical disks where the volume replica is
-          spread cross, especially for striped LVM volume replica
-        items:
-          type: string
-        type: array
-      haState:
-        $ref: '#/definitions/api.HAState'
-        description: HAState is state for ha replica, replica.Status.State == Ready
-          only when HAState is Consistent of nil
-      inUse:
-        description: InUse is one of volume replica's states, which indicates the
-          replica is used by a Pod or not
-        type: boolean
-      state:
-        description: State is the phase of volume replica, e.g. Creating, Ready, NotReady,
-          ToBeDeleted, Deleted
-        type: string
-      storagePath:
-        description: StoragePath is a real path of the volume replica, like /dev/sdg.
-        type: string
-      synced:
-        description: Synced is the sync state of the volume replica, which is important
-          in HA volume
-        type: boolean
     type: object
   api.ModuleStatus:
     properties:
@@ -256,14 +126,14 @@ definitions:
     type: object
   api.NodeStorageUse:
     properties:
+      allocatedCapacityBytes:
+        description: 已分配容量
+        type: integer
       name:
         description: 存储节点名字
         type: string
       totalCapacityBytes:
         description: 总容量
-        type: integer
-      usedCapacityBytes:
-        description: 已使用容量
         type: integer
     type: object
   api.NodeStorageUseMetric:
@@ -300,17 +170,20 @@ definitions:
     type: object
   api.OperationMetric:
     properties:
-      operationList:
+      items:
         items:
           $ref: '#/definitions/api.Operation'
         type: array
+      pagination:
+        $ref: '#/definitions/api.Pagination'
+        description: page 信息
     type: object
   api.Pagination:
     properties:
       page:
         description: 当前页索引，从 1 开始，为 0 时，会自动重置为默认值 constants.DefaultPage
         type: integer
-      page_size:
+      pageSize:
         description: |-
           每页数据量，为 -1 时表示查询全部，为 0 时会重置为默认值
           constants.DefaultPageSize
@@ -318,24 +191,21 @@ definitions:
       pages:
         description: 总页数
         type: integer
-      search:
-        description: 搜索关键字，支持模糊搜索,精准匹配和高级搜索.
-        type: string
-      sort:
-        description: 排序规则，支持字符串和数字类型的字段进行排序
-        type: string
       total:
         description: 总共有多少条目，请求时可以不用传递
         type: integer
     type: object
   api.StorageNode:
     properties:
-      driverStatus:
-        description: driver status 驱动状态
-        type: string
-      freeCapacityBytes:
-        description: freeCapacityBytes LSN可分配存储容量
+      allocatedHDDCapacityBytes:
+        description: allocatedHDDCapacityBytes HDD已经分配存储量
         type: integer
+      allocatedSSDCapacityBytes:
+        description: allocatedSSDCapacityBytes SSD已经分配存储量
+        type: integer
+      driverStatus:
+        description: driver status 驱动状态  运行中（Ready）,维护中（Maintain）, 离线（Offline）
+        type: string
       ip:
         description: ip 节点IP
         type: string
@@ -346,37 +216,34 @@ definitions:
         description: name 节点名字
         type: string
       nodeState:
-        description: node state 节点状态
+        description: node state 节点状态 运行中（Ready）,未就绪（NotReady）,未知（Unknown）
         type: string
       totalDiskCount:
         description: totalDiskCount 总磁盘数
         type: integer
       totalHDDCapacityBytes:
-        description: totalHDDCapacityBytes HDD存储总容量
+        description: |-
+          // freeCapacityBytes LSN可分配存储容量
+          FreeCapacityBytes int64 `json:"freeCapacityBytes,omitempty"`
+          totalHDDCapacityBytes HDD存储总容量
         type: integer
       totalSSDCapacityBytes:
         description: totalSSDCapacityBytes SSD存储总容量
         type: integer
       usedDiskCount:
-        description: usedDiskCount 已纳管磁盘数
-        type: integer
-      usedHDDCapacityBytes:
-        description: usedHDDCapacityBytes HDD已经使用存储量
-        type: integer
-      usedSSDCapacityBytes:
-        description: usedSSDCapacityBytes SSD已经使用存储量
+        description: usedDiskCount 已绑定磁盘数
         type: integer
     type: object
   api.StorageNodeList:
     properties:
-      page:
-        $ref: '#/definitions/api.Pagination'
-        description: page 信息
-      storageNodes:
+      items:
         description: StorageNodes
         items:
           $ref: '#/definitions/api.StorageNode'
         type: array
+      pagination:
+        $ref: '#/definitions/api.Pagination'
+        description: page 信息
     type: object
   api.StorageNodeListByPool:
     properties:
@@ -394,15 +261,15 @@ definitions:
     type: object
   api.StoragePool:
     properties:
+      allocatedCapacityBytes:
+        description: AllocatedCapacityBytes 存储池已经分配存储容量
+        type: integer
       class:
         description: 'Supported class: HDD, SSD, NVMe 磁盘类型'
         type: string
       createTime:
         description: createTime 创建时间
         type: string
-      highAvailability:
-        description: HighAvailability 是否高可用
-        type: boolean
       name:
         description: 'Supported pool name: HDD_POOL, SSD_POOL, NVMe_POOL 存储池名称'
         type: string
@@ -411,9 +278,6 @@ definitions:
         type: integer
       totalCapacityBytes:
         description: TotalCapacityBytes 存储池对应存储总容量
-        type: integer
-      usedCapacityBytes:
-        description: UsedCapacityBytes 存储池已经使用存储容量
         type: integer
     type: object
   api.StoragePoolList:
@@ -429,14 +293,14 @@ definitions:
     type: object
   api.StoragePoolUse:
     properties:
+      allocatedCapacityBytes:
+        description: 已分配容量
+        type: integer
       name:
         description: 存储池名字
         type: string
       totalCapacityBytes:
         description: 总容量
-        type: integer
-      usedCapacityBytes:
-        description: 已使用容量
         type: integer
     type: object
   api.StoragePoolUseMetric:
@@ -480,14 +344,14 @@ definitions:
     type: object
   api.VolumeList:
     properties:
-      page:
-        $ref: '#/definitions/api.Pagination'
-        description: page 信息
-      volumes:
+      items:
         description: volumes
         items:
           $ref: '#/definitions/api.Volume'
         type: array
+      pagination:
+        $ref: '#/definitions/api.Pagination'
+        description: page 信息
     type: object
   api.VolumeMigrateOperation:
     properties:
@@ -515,7 +379,7 @@ definitions:
     type: object
   api.VolumeOperationByVolume:
     properties:
-      volumeMigrateOperations:
+      items:
         description: VolumeMigrateOperations
         items:
           $ref: '#/definitions/api.VolumeMigrateOperation'
@@ -526,17 +390,17 @@ definitions:
     type: object
   api.VolumeOperationListByNode:
     properties:
-      nodeName:
-        description: node name
-        type: string
-      page:
-        $ref: '#/definitions/api.Pagination'
-        description: page 信息
-      volumeMigrateOperations:
+      items:
         description: VolumeOperations
         items:
           $ref: '#/definitions/api.VolumeMigrateOperation'
         type: array
+      nodeName:
+        description: node name
+        type: string
+      pagination:
+        $ref: '#/definitions/api.Pagination'
+        description: page 信息
     type: object
   api.VolumeReplica:
     properties:
@@ -577,6 +441,12 @@ definitions:
           $ref: '#/definitions/api.VolumeReplica'
         type: array
     type: object
+  api.YamlData:
+    properties:
+      data:
+        description: yaml data
+        type: string
+    type: object
 info:
   contact: {}
 paths:
@@ -587,7 +457,7 @@ paths:
       description: get DRBDSettingGet
       parameters:
       - description: enabledrbd
-        in: query
+        in: path
         name: Enabledrbd
         type: string
       produces:
@@ -625,11 +495,11 @@ paths:
     get:
       consumes:
       - application/json
-      description: get volume
+      description: get baseMetric
       parameters:
       - description: name
         in: query
-        name: Name
+        name: name
         type: string
       produces:
       - application/json
@@ -645,11 +515,11 @@ paths:
     get:
       consumes:
       - application/json
-      description: ModuleStatusMetric
+      description: ModuleStatusMetric Running (运行中) / NotReady (未就绪)
       parameters:
       - description: name
         in: query
-        name: Name
+        name: name
         type: string
       produces:
       - application/json
@@ -661,15 +531,15 @@ paths:
       summary: 摘要 获取组件状态监控指标
       tags:
       - Metric
-  /metrics/nodestorageusemetric/:StoragePoolClass:
+  /metrics/nodestorageusemetric/{storagePoolClass}:
     get:
       consumes:
       - application/json
       description: NodeStorageUseMetric
       parameters:
       - description: storagePoolClass
-        in: query
-        name: StoragePoolClass
+        in: path
+        name: storagePoolClass
         required: true
         type: string
       produces:
@@ -679,6 +549,10 @@ paths:
           description: 成功
           schema:
             $ref: '#/definitions/api.NodeStorageUseMetric'
+        "404":
+          description: 失败
+          schema:
+            $ref: '#/definitions/api.NodeStorageUseMetric'
       summary: 摘要 获取指定存储池类型节点存储TOP5使用率监控指标
       tags:
       - Metric
@@ -686,12 +560,22 @@ paths:
     get:
       consumes:
       - application/json
-      description: OperationList
+      description: OperationList 状态枚举 （Submitted、AddReplica、SyncReplica、PruneReplica、InProgress、Completed、ToBeAborted、Cancelled、Aborted、Failed）
       parameters:
       - description: name
         in: query
-        name: Name
+        name: name
         type: string
+      - description: page
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: pageSize
+        in: query
+        name: pageSize
+        required: true
+        type: integer
       produces:
       - application/json
       responses:
@@ -710,7 +594,7 @@ paths:
       parameters:
       - description: name
         in: query
-        name: Name
+        name: name
         type: string
       produces:
       - application/json
@@ -722,75 +606,25 @@ paths:
       summary: 摘要 获取存储池资源监控指标
       tags:
       - Metric
-  /nodes/storagenodes:
-    get:
-      consumes:
-      - application/json
-      description: list StorageNode
-      parameters:
-      - description: name
-        in: query
-        name: Name
-        type: string
-      - description: page
-        in: query
-        name: Page
-        required: true
-        type: integer
-      - description: pageSize
-        in: query
-        name: PageSize
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/api.StorageNodeList'
-      summary: 摘要 获取存储节点列表
-      tags:
-      - Node
-  /nodes/storagenodes/:storagenodename:
-    get:
-      consumes:
-      - application/json
-      description: get StorageNode
-      parameters:
-      - description: name
-        in: query
-        name: Name
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/api.StorageNode'
-      summary: 摘要 获取指定存储节点
-      tags:
-      - Node
-  /nodes/storagenodes/:storagenodename/disks:
+  /nodes/storagenode/{nodeName}/disks:
     get:
       consumes:
       - application/json
       description: list StorageNodeDisks
       parameters:
       - description: nodeName
-        in: query
-        name: NodeName
+        in: path
+        name: nodeName
         required: true
         type: string
       - description: page
         in: query
-        name: Page
+        name: page
         required: true
         type: integer
       - description: pageSize
         in: query
-        name: PageSize
+        name: pageSize
         required: true
         type: integer
       produces:
@@ -803,25 +637,25 @@ paths:
       summary: 摘要 获取指定存储节点磁盘列表
       tags:
       - Node
-  /nodes/storagenodes/:storagenodename/migrates:
+  /nodes/storagenode/{nodeName}/migrates:
     get:
       consumes:
       - application/json
       description: get StorageNodeMigrate
       parameters:
       - description: nodeName
-        in: query
-        name: NodeName
+        in: path
+        name: nodeName
         required: true
         type: string
       - description: page
         in: query
-        name: Page
+        name: page
         required: true
         type: integer
       - description: pageSize
         in: query
-        name: PageSize
+        name: pageSize
         required: true
         type: integer
       produces:
@@ -834,24 +668,46 @@ paths:
       summary: 摘要 获取指定节点数据卷迁移任务列表
       tags:
       - Node
-  /pools/storagepools:
+  /nodes/storagenodeoperations/{migrateOperationName}/yaml:
     get:
       consumes:
       - application/json
-      description: list StoragePools
+      description: get StorageNodeVolumeOperationYamlGet
+      parameters:
+      - description: migrateOperationName
+        in: path
+        name: migrateOperationName
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/api.YamlData'
+      summary: 摘要 获取节点数据卷操作记录yaml信息
+      tags:
+      - Node
+  /nodes/storagenodes:
+    get:
+      consumes:
+      - application/json
+      description: list StorageNode  驱动状态 [运行中（Ready）,维护中（Maintain）, 离线（Offline)]
+        , 节点状态 [运行中（Ready）,未就绪（NotReady）,未知（Unknown)]
       parameters:
       - description: name
         in: query
-        name: Name
+        name: name
         type: string
       - description: page
         in: query
-        name: Page
+        name: page
         required: true
         type: integer
       - description: pageSize
         in: query
-        name: PageSize
+        name: pageSize
         required: true
         type: integer
       produces:
@@ -860,20 +716,20 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/api.StoragePoolList'
-      summary: 摘要 获取存储池列表信息
+            $ref: '#/definitions/api.StorageNodeList'
+      summary: 摘要 获取存储节点列表
       tags:
-      - Pool
-  /pools/storagepools/:storagepoolname:
+      - Node
+  /nodes/storagenodes/{name}:
     get:
       consumes:
       - application/json
-      description: get Pool
+      description: get StorageNode 驱动状态 [运行中（Ready）,维护中（Maintain）, 离线（Offline)] ,
+        节点状态 [运行中（Ready）,未就绪（NotReady）,未知（Unknown)]
       parameters:
       - description: name
-        in: query
-        name: Name
-        required: true
+        in: path
+        name: name
         type: string
       produces:
       - application/json
@@ -881,29 +737,29 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/api.StoragePool'
-      summary: 摘要 获取指定存储池基本信息
+            $ref: '#/definitions/api.StorageNode'
+      summary: 摘要 获取指定存储节点
       tags:
-      - Pool
-  /pools/storagepools/:storagepoolname/nodes:
+      - Node
+  /pools/storagepool/{storagePoolName}/nodes:
     get:
       consumes:
       - application/json
       description: get StorageNodesGetByPoolName
       parameters:
       - description: storagePoolName
-        in: query
-        name: StoragePoolName
+        in: path
+        name: storagePoolName
         required: true
         type: string
       - description: page
         in: query
-        name: Page
+        name: page
         required: true
         type: integer
       - description: pageSize
         in: query
-        name: PageSize
+        name: pageSize
         required: true
         type: integer
       produces:
@@ -916,30 +772,30 @@ paths:
       summary: 摘要 获取指定存储池存储节点列表信息
       tags:
       - Pool
-  /pools/storagepools/:storagepoolname/nodes/:nodename/disks:
+  /pools/storagepool/{storagePoolName}/nodes/{nodeName}/disks:
     get:
       consumes:
       - application/json
       description: get StorageNodeDisksGetByPoolName
       parameters:
       - description: nodeName
-        in: query
-        name: NodeName
+        in: path
+        name: nodeName
         required: true
         type: string
       - description: storagePoolName
-        in: query
-        name: StoragePoolName
+        in: path
+        name: storagePoolName
         required: true
         type: string
       - description: page
         in: query
-        name: Page
+        name: page
         required: true
         type: integer
       - description: pageSize
         in: query
-        name: PageSize
+        name: pageSize
         required: true
         type: integer
       produces:
@@ -952,15 +808,87 @@ paths:
       summary: 摘要 获取指定存储池指定存储节点磁盘列表信息
       tags:
       - Pool
-  /volumes/volumeoperations/:volumename:
+  /pools/storagepools:
+    get:
+      consumes:
+      - application/json
+      description: list StoragePools
+      parameters:
+      - description: name
+        in: query
+        name: name
+        type: string
+      - description: page
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: pageSize
+        in: query
+        name: pageSize
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.StoragePoolList'
+      summary: 摘要 获取存储池列表信息
+      tags:
+      - Pool
+  /pools/storagepools/{name}:
+    get:
+      consumes:
+      - application/json
+      description: get Pool
+      parameters:
+      - description: name
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.StoragePool'
+      summary: 摘要 获取指定存储池基本信息
+      tags:
+      - Pool
+  /volumes/volumeoperation/{volumeOperationName}/yaml:
+    get:
+      consumes:
+      - application/json
+      description: get VolumeOperationYamlGet
+      parameters:
+      - description: volumeOperationName
+        in: path
+        name: volumeOperationName
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/api.YamlData'
+      summary: 摘要 获取数据卷操作记录yaml信息
+      tags:
+      - Volume
+  /volumes/volumeoperations/{volumeName}:
     get:
       consumes:
       - application/json
       description: get VolumeOperation
       parameters:
       - description: volumeName
-        in: query
-        name: VolumeName
+        in: path
+        name: volumeName
         required: true
         type: string
       produces:
@@ -973,15 +901,15 @@ paths:
       summary: 摘要 获取指定数据卷操作记录信息（目前仅包含迁移运维操作）
       tags:
       - Volume
-  /volumes/volumeoperations/yamls/:operationname:
+  /volumes/volumereplica/{volumeReplicaName}/yaml:
     get:
       consumes:
       - application/json
-      description: get VolumeOperationYamlGet
+      description: get VolumeReplicaYaml
       parameters:
-      - description: name
-        in: query
-        name: Name
+      - description: volumeReplicaName
+        in: path
+        name: volumeReplicaName
         required: true
         type: string
       produces:
@@ -990,19 +918,19 @@ paths:
         "200":
           description: 成功
           schema:
-            $ref: '#/definitions/api.LocalVolumeMigrate'
-      summary: 摘要 获取数据卷操作记录yaml信息
+            $ref: '#/definitions/api.YamlData'
+      summary: 摘要 查看指定数据卷副本yaml信息
       tags:
       - Volume
-  /volumes/volumereplicas/:volumename:
+  /volumes/volumereplicas/{volumeName}:
     get:
       consumes:
       - application/json
       description: list volumes
       parameters:
       - description: volumeName
-        in: query
-        name: VolumeName
+        in: path
+        name: volumeName
         required: true
         type: string
       produces:
@@ -1015,27 +943,6 @@ paths:
       summary: 摘要 获取指定数据卷的副本列表信息
       tags:
       - Volume
-  /volumes/volumereplicas/yamls/:volumereplicaname:
-    get:
-      consumes:
-      - application/json
-      description: get VolumeReplicaYaml
-      parameters:
-      - description: name
-        in: query
-        name: Name
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 成功
-          schema:
-            $ref: '#/definitions/api.LocalVolumeReplica'
-      summary: 摘要 查看指定数据卷副本yaml信息
-      tags:
-      - Volume
   /volumes/volumes:
     get:
       consumes:
@@ -1044,16 +951,16 @@ paths:
       parameters:
       - description: name
         in: query
-        name: Name
+        name: name
         type: string
       - description: page
         in: query
-        name: Page
+        name: page
         required: true
         type: integer
       - description: pageSize
         in: query
-        name: PageSize
+        name: pageSize
         required: true
         type: integer
       produces:
@@ -1066,15 +973,15 @@ paths:
       summary: 摘要 获取数据卷列表信息
       tags:
       - Volume
-  /volumes/volumes/:volumename:
+  /volumes/volumes/{name}:
     get:
       consumes:
       - application/json
       description: get Volume
       parameters:
       - description: name
-        in: query
-        name: Name
+        in: path
+        name: name
         required: true
         type: string
       produces:

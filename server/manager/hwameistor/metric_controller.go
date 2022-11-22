@@ -2,7 +2,7 @@ package hwameistor
 
 import (
 	"context"
-	utils "github.com/hwameistor/hwameistor-ui/server/util"
+	"math"
 	"sort"
 	"strings"
 	"sync"
@@ -14,6 +14,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	hwameistorapi "github.com/hwameistor/hwameistor-ui/server/api"
+	utils "github.com/hwameistor/hwameistor-ui/server/util"
 	apisv1alpha1 "github.com/hwameistor/hwameistor/pkg/apis/hwameistor/v1alpha1"
 )
 
@@ -132,35 +133,8 @@ func (mController *MetricController) GetNodeStorageUseMetric(storagepoolclass st
 	return nodeStorageUseMetric, nil
 }
 
-// stateConvert
-func (mController *MetricController) stateConvert(state apisv1alpha1.State) hwameistorapi.State {
-	switch state {
-	case apisv1alpha1.OperationStateToBeAborted:
-		return hwameistorapi.OperationStateToBeAborted
-
-	case apisv1alpha1.OperationStateFailed:
-		return hwameistorapi.OperationStateFailed
-
-	case apisv1alpha1.OperationStateAborted:
-		return hwameistorapi.OperationStateAborted
-
-	case apisv1alpha1.OperationStateAborting:
-		return hwameistorapi.OperationStateAborting
-
-	case apisv1alpha1.OperationStateCompleted:
-		return hwameistorapi.OperationStateCompleted
-
-	case apisv1alpha1.OperationStateInProgress:
-		return hwameistorapi.OperationStateInProgress
-
-	case apisv1alpha1.OperationStateSubmitted:
-		return hwameistorapi.OperationStateSubmitted
-	}
-	return ""
-}
-
 // OperationListMetric
-func (mController *MetricController) OperationListMetric() (*hwameistorapi.OperationMetric, error) {
+func (mController *MetricController) OperationListMetric(page, pageSize int32) (*hwameistorapi.OperationMetric, error) {
 
 	var operationMetric = &hwameistorapi.OperationMetric{}
 	var operationList []hwameistorapi.Operation
@@ -173,7 +147,7 @@ func (mController *MetricController) OperationListMetric() (*hwameistorapi.Opera
 		var operation hwameistorapi.Operation
 		operation.EventName = item.Name
 		operation.EventType = item.Kind
-		operation.Status = mController.stateConvert(item.Status.State)
+		operation.Status = hwameistorapi.StateConvert(item.Status.State)
 		operation.StartTime = item.CreationTimestamp.Time
 		operation.Description = item.Status.Message
 		operationList = append(operationList, operation)
@@ -188,7 +162,7 @@ func (mController *MetricController) OperationListMetric() (*hwameistorapi.Opera
 		var operation hwameistorapi.Operation
 		operation.EventName = item.Name
 		operation.EventType = item.Kind
-		operation.Status = mController.stateConvert(item.Status.State)
+		operation.Status = hwameistorapi.StateConvert(item.Status.State)
 		operation.StartTime = item.CreationTimestamp.Time
 		operation.EndTime = item.DeletionTimestamp.Time
 		operation.Description = item.Status.Message
@@ -204,14 +178,26 @@ func (mController *MetricController) OperationListMetric() (*hwameistorapi.Opera
 		var operation hwameistorapi.Operation
 		operation.EventName = item.Name
 		operation.EventType = item.Kind
-		operation.Status = mController.stateConvert(item.Status.State)
+		operation.Status = hwameistorapi.StateConvert(item.Status.State)
 		operation.StartTime = item.CreationTimestamp.Time
 		operation.EndTime = item.DeletionTimestamp.Time
 		operation.Description = item.Status.Message
 		operationList = append(operationList, operation)
 	}
 
-	operationMetric.OperationList = operationList
+	operationMetric.OperationList = utils.DataPatination(operationList, page, pageSize)
+
+	var pagination = &hwameistorapi.Pagination{}
+	pagination.Page = page
+	pagination.PageSize = pageSize
+	pagination.Total = uint32(len(operationList))
+	if len(operationList) == 0 {
+		pagination.Pages = 0
+	} else {
+		pagination.Pages = int32(math.Ceil(float64(len(operationList)) / float64(pageSize)))
+	}
+	operationMetric.Page = pagination
+
 	return operationMetric, nil
 }
 
@@ -275,14 +261,12 @@ func (mController *MetricController) getBaseDiskMetric() error {
 	for i := range diskList.Items {
 		if diskList.Items[i].Spec.State == apisv1alpha1.LocalDiskActive {
 			mController.diskCollection.HealthyDiskNum++
-			if diskList.Items[i].Status.State == apisv1alpha1.LocalDiskClaimed {
-				mController.diskCollection.ManagedDiskNum++
-			}
 		} else {
 			mController.diskCollection.ErrorDiskNum++
 		}
 	}
 	mController.diskCollection.TotalDisksNum = int64(len(diskList.Items))
+	mController.diskCollection.BoundedDiskNum = int64(len(diskList.Items))
 
 	return nil
 }
@@ -293,7 +277,7 @@ func (mController *MetricController) convertBaseMetric() *hwameistorapi.BaseMetr
 
 	basemetric.ReservedCapacityBytes = mController.storageCapacityCollection.ReservedCapacityBytes
 	basemetric.TotalCapacityBytes = mController.storageCapacityCollection.TotalCapacityBytes
-	basemetric.UsedCapacityBytes = mController.storageCapacityCollection.UsedCapacityBytes
+	basemetric.AllocatedCapacityBytes = mController.storageCapacityCollection.AllocatedCapacityBytes
 	basemetric.FreeCapacityBytes = mController.storageCapacityCollection.FreeCapacityBytes
 	basemetric.TotalNodeNum = mController.storageNodesCollection.TotalNodesNum
 	basemetric.ClaimedNodeNum = mController.storageNodesCollection.ManagedNodesNum
@@ -303,7 +287,7 @@ func (mController *MetricController) convertBaseMetric() *hwameistorapi.BaseMetr
 	basemetric.LocalVolumeNum = mController.volumeCollection.TotalVolumesNum
 
 	basemetric.HealthyDiskNum = mController.diskCollection.HealthyDiskNum
-	basemetric.ClaimedDiskNum = mController.diskCollection.ManagedDiskNum
+	basemetric.BoundedDiskNum = mController.diskCollection.BoundedDiskNum
 	basemetric.TotalDiskNum = mController.diskCollection.TotalDisksNum
 	basemetric.UnHealthyDiskNum = mController.diskCollection.ErrorDiskNum
 
@@ -334,7 +318,7 @@ func (mController *MetricController) convertStoragePoolUseMetric() *hwameistorap
 		for name, poolUse := range mController.storagePoolUseCollection.StoragePoolUseMap {
 			storagePoolUse := hwameistorapi.StoragePoolUse{}
 			storagePoolUse.Name = name
-			storagePoolUse.UsedCapacityBytes = poolUse.UsedCapacityBytes
+			storagePoolUse.AllocatedCapacityBytes = poolUse.AllocatedCapacityBytes
 			storagePoolUse.TotalCapacityBytes = poolUse.TotalCapacityBytes
 			storagePoolUseMetric.StoragePoolsUse = append(storagePoolUseMetric.StoragePoolsUse, storagePoolUse)
 		}
@@ -346,7 +330,7 @@ func (mController *MetricController) convertStoragePoolUseMetric() *hwameistorap
 // resetNodeResourceMetric
 func (mController *MetricController) resetNodeResourceMetric() {
 	mController.storageCapacityCollection.ReservedCapacityBytes = 0
-	mController.storageCapacityCollection.UsedCapacityBytes = 0
+	mController.storageCapacityCollection.AllocatedCapacityBytes = 0
 	mController.storageCapacityCollection.TotalCapacityBytes = 0
 	mController.storageCapacityCollection.FreeCapacityBytes = 0
 
@@ -358,7 +342,7 @@ func (mController *MetricController) resetNodeResourceMetric() {
 	mController.volumeCollection.TotalVolumesNum = 0
 
 	mController.diskCollection.TotalDisksNum = 0
-	mController.diskCollection.ManagedDiskNum = 0
+	mController.diskCollection.BoundedDiskNum = 0
 	mController.diskCollection.ErrorDiskNum = 0
 	mController.diskCollection.HealthyDiskNum = 0
 }
@@ -370,7 +354,7 @@ func (mController *MetricController) addNodeResourceMetric(node *apisv1alpha1.Lo
 
 	for _, pool := range node.Status.Pools {
 		mController.storageCapacityCollection.TotalCapacityBytes += pool.TotalCapacityBytes
-		mController.storageCapacityCollection.UsedCapacityBytes += pool.TotalVolumeCount
+		mController.storageCapacityCollection.AllocatedCapacityBytes += pool.UsedCapacityBytes
 		mController.storageCapacityCollection.FreeCapacityBytes += pool.FreeCapacityBytes
 	}
 	mController.storageNodesCollection.ManagedNodesNum++
@@ -484,12 +468,12 @@ func (mController *MetricController) addStoragePoolUseMetric() error {
 			for _, pool := range lsnList.Items[i].Status.Pools {
 				if value, exists := mController.storagePoolUseCollection.StoragePoolUseMap[pool.Name]; exists {
 					value.TotalCapacityBytes = value.TotalCapacityBytes + pool.TotalCapacityBytes
-					value.UsedCapacityBytes = value.UsedCapacityBytes + pool.UsedCapacityBytes
+					value.AllocatedCapacityBytes = value.AllocatedCapacityBytes + pool.UsedCapacityBytes
 					mController.storagePoolUseCollection.StoragePoolUseMap[pool.Name] = value
 				} else {
 					storagePoolUse := hwameistorapi.StoragePoolUse{}
 					storagePoolUse.TotalCapacityBytes = pool.TotalCapacityBytes
-					storagePoolUse.UsedCapacityBytes = pool.UsedCapacityBytes
+					storagePoolUse.AllocatedCapacityBytes = pool.UsedCapacityBytes
 					mController.storagePoolUseCollection.StoragePoolUseMap[pool.Name] = storagePoolUse
 				}
 			}
@@ -517,7 +501,7 @@ func (mController *MetricController) addNodeStorageUseMetric(storagepoolclass st
 				if pool.Class == storagepoolclass {
 					nodeStorageUseRatio.Name = lsnList.Items[i].Name
 					nodeStorageUseRatio.TotalCapacityBytes = pool.TotalCapacityBytes
-					nodeStorageUseRatio.UsedCapacityBytes = pool.UsedCapacityBytes
+					nodeStorageUseRatio.AllocatedCapacityBytes = pool.UsedCapacityBytes
 					capacityRatio, _ := utils.DivideOperate(pool.UsedCapacityBytes, pool.TotalCapacityBytes)
 					nodeStorageUseRatio.CapacityBytesRatio = int64(capacityRatio * 100)
 					nodeStorageUseRatios = append(nodeStorageUseRatios, nodeStorageUseRatio)
@@ -543,7 +527,7 @@ func (mController *MetricController) convertNodeStorageUseMetric(storagepoolclas
 			if i < nodeStorageSortNum {
 				nodeStorageUse := hwameistorapi.NodeStorageUse{}
 				nodeStorageUse.Name = ratio.Name
-				nodeStorageUse.UsedCapacityBytes = ratio.UsedCapacityBytes
+				nodeStorageUse.AllocatedCapacityBytes = ratio.AllocatedCapacityBytes
 				nodeStorageUse.TotalCapacityBytes = ratio.TotalCapacityBytes
 				nodeStorageUseMetric.NodeStoragesUse = append(nodeStorageUseMetric.NodeStoragesUse, nodeStorageUse)
 			}
