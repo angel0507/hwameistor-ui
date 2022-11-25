@@ -16,69 +16,6 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/Settings/highavailabilitysetting": {
-            "get": {
-                "description": "get DRBDSettingGet",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Setting"
-                ],
-                "summary": "摘要 获取高可用设置",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "enabledrbd",
-                        "name": "Enabledrbd",
-                        "in": "path"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/api.DrbdEnableSetting"
-                        }
-                    }
-                }
-            }
-        },
-        "/Settings/highavailabilitysetting/:enabledrbd": {
-            "post": {
-                "description": "post EnableDRBDSetting",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Setting"
-                ],
-                "summary": "摘要 高可用设置",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "enabledrbd",
-                        "name": "Enabledrbd",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/api.DrbdEnableSetting"
-                        }
-                    }
-                }
-            }
-        },
         "/metrics/basemetric": {
             "get": {
                 "description": "get baseMetric",
@@ -626,6 +563,69 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/api.StoragePool"
+                        }
+                    }
+                }
+            }
+        },
+        "/settings/highavailabilitysetting": {
+            "get": {
+                "description": "get DRBDSettingGet",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Setting"
+                ],
+                "summary": "摘要 获取高可用设置",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "enabledrbd",
+                        "name": "enabledrbd",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.DrbdEnableSetting"
+                        }
+                    }
+                }
+            }
+        },
+        "/settings/highavailabilitysetting/:enabledrbd": {
+            "post": {
+                "description": "post EnableDRBDSetting",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Setting"
+                ],
+                "summary": "摘要 高可用设置",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "enabledrbd",
+                        "name": "enabledrbd",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.DrbdEnableSetting"
                         }
                     }
                 }

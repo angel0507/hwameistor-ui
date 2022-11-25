@@ -28,6 +28,8 @@ type ServerManager struct {
 
 	lspController *hwameistorctr.LocalStoragePoolController
 
+	settingController *hwameistorctr.SettingController
+
 	mgr mgrpkg.Manager
 
 	logger *log.Entry
@@ -37,16 +39,17 @@ type ServerManager struct {
 func NewServerManager(mgr mgrpkg.Manager, clientset *kubernetes.Clientset) (*ServerManager, error) {
 	var recorder record.EventRecorder
 	return &ServerManager{
-		nodeName:      utils.GetNodeName(),
-		namespace:     utils.GetNamespace(),
-		apiClient:     mgr.GetClient(),
-		clientset:     clientset,
-		lsnController: hwameistorctr.NewLocalStorageNodeController(mgr.GetClient(), clientset, recorder),
-		lvController:  hwameistorctr.NewLocalVolumeController(mgr.GetClient(), clientset, recorder),
-		mController:   hwameistorctr.NewMetricController(mgr.GetClient(), clientset, recorder),
-		lspController: hwameistorctr.NewLocalStoragePoolController(mgr.GetClient(), clientset, recorder),
-		mgr:           mgr,
-		logger:        log.WithField("Module", "ServerManager"),
+		nodeName:          utils.GetNodeName(),
+		namespace:         utils.GetNamespace(),
+		apiClient:         mgr.GetClient(),
+		clientset:         clientset,
+		lsnController:     hwameistorctr.NewLocalStorageNodeController(mgr.GetClient(), clientset, recorder),
+		lvController:      hwameistorctr.NewLocalVolumeController(mgr.GetClient(), clientset, recorder),
+		mController:       hwameistorctr.NewMetricController(mgr.GetClient(), clientset, recorder),
+		lspController:     hwameistorctr.NewLocalStoragePoolController(mgr.GetClient(), clientset, recorder),
+		settingController: hwameistorctr.NewSettingController(mgr.GetClient(), clientset, recorder),
+		mgr:               mgr,
+		logger:            log.WithField("Module", "ServerManager"),
 	}, nil
 }
 
@@ -82,4 +85,13 @@ func (m *ServerManager) StoragePoolController() *hwameistorctr.LocalStoragePoolC
 		m.lspController = hwameistorctr.NewLocalStoragePoolController(m.mgr.GetClient(), m.clientset, recorder)
 	}
 	return m.lspController
+}
+
+func (m *ServerManager) SettingController() *hwameistorctr.SettingController {
+
+	var recorder record.EventRecorder
+	if m.settingController == nil {
+		m.settingController = hwameistorctr.NewSettingController(m.mgr.GetClient(), m.clientset, recorder)
+	}
+	return m.settingController
 }
