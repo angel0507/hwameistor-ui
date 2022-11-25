@@ -76,8 +76,3 @@ _enable_buildx:
 		echo "experimental config of docker is false"; \
 		exit 1; \
 	fi
-
-
-.PHONY: e2e-test
-e2e-test:
-	bash test/e2e-test.sh

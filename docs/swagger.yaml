@@ -450,47 +450,6 @@ definitions:
 info:
   contact: {}
 paths:
-  /Settings/highavailabilitysetting:
-    get:
-      consumes:
-      - application/json
-      description: get DRBDSettingGet
-      parameters:
-      - description: enabledrbd
-        in: path
-        name: Enabledrbd
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/api.DrbdEnableSetting'
-      summary: 摘要 获取高可用设置
-      tags:
-      - Setting
-  /Settings/highavailabilitysetting/:enabledrbd:
-    post:
-      consumes:
-      - application/json
-      description: post EnableDRBDSetting
-      parameters:
-      - description: enabledrbd
-        in: query
-        name: Enabledrbd
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/api.DrbdEnableSetting'
-      summary: 摘要 高可用设置
-      tags:
-      - Setting
   /metrics/basemetric:
     get:
       consumes:
@@ -859,6 +818,47 @@ paths:
       summary: 摘要 获取指定存储池基本信息
       tags:
       - Pool
+  /settings/highavailabilitysetting:
+    get:
+      consumes:
+      - application/json
+      description: get DRBDSettingGet
+      parameters:
+      - description: enabledrbd
+        in: path
+        name: enabledrbd
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.DrbdEnableSetting'
+      summary: 摘要 获取高可用设置
+      tags:
+      - Setting
+  /settings/highavailabilitysetting/:enabledrbd:
+    post:
+      consumes:
+      - application/json
+      description: post EnableDRBDSetting
+      parameters:
+      - description: enabledrbd
+        in: path
+        name: enabledrbd
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.DrbdEnableSetting'
+      summary: 摘要 高可用设置
+      tags:
+      - Setting
   /volumes/volumeoperation/{volumeOperationName}/yaml:
     get:
       consumes:
