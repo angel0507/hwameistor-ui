@@ -18,7 +18,7 @@ spec:
       serviceAccountName: hwameistor-ui
       containers:
       - name: hwameistor-ui
-        image: ghcr.io/hwameistor/hwameistor-ui:99.9-dev
+        image: ghcr.io/hwameistor/hwameistor-ui:v0.0.1
         imagePullPolicy: IfNotPresent
         volumeMounts:
         - name : nginx-cache
@@ -67,11 +67,6 @@ spec:
   - name: frontend
     port: 80
     targetPort: 80
-    nodePort: 30036
-    protocol: TCP
-  - name: backend
-    port: 8081
-    targetPort: 8081
     nodePort: 30036
     protocol: TCP
 
