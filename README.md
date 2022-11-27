@@ -32,7 +32,7 @@ Our slack channel is [here](https://join.slack.com/t/hwameistor/shared_invite/zt
 ### WeChat
 HwameiStor tech-talk group:
 
-![QR code for Wechat](./docs/docs/img/wechat.png)
+![QR code for Wechat](./docs/img/wechat.png)
 
 ## Discussion
 
