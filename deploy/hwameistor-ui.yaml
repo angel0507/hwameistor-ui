@@ -4,7 +4,7 @@ metadata:
   labels:
     app: hwameistor-ui
   name: hwameistor-ui
-  namespace: Hwameistor
+  namespace: hwameistor
 spec:
   replicas: 1
   selector:
@@ -58,7 +58,7 @@ metadata:
   labels:
     app: hwameistor-ui
   name: hwameistor-ui
-  namespace: Hwameistor
+  namespace: hwameistor
 spec:
   type: NodePort
   selector:
