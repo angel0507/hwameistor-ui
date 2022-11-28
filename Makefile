@@ -22,7 +22,7 @@ release:release_uiserver
 
 .PHONY: unit-test
 unit-test:
-	go test -race -coverprofile=coverage.txt -covermode=atomic ./server/pkg/...
+	go test -race -coverprofile=coverage.txt -covermode=atomic ./server/...
 	curl -s https://codecov.io/bash | bash
 
 .PHONY: vendor
