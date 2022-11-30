@@ -68,7 +68,7 @@ func CollectRoute(r *gin.Engine) *gin.Engine {
 
 	settingController := controller.NewSettingController(m)
 	settingRoutes := v1.Group("/settings")
-	settingRoutes.POST("/highavailabilitysetting/:enabledrbd", settingController.EnableDRBDSetting)
+	//settingRoutes.POST("/highavailabilitysetting/:enabledrbd", settingController.EnableDRBDSetting)
 	settingRoutes.GET("/highavailabilitysetting", settingController.DRBDSettingGet)
 
 	fmt.Println("CollectRoute end ...")
