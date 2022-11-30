@@ -599,7 +599,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/settings/highavailabilitysetting/:enabledrbd": {
+        "/settings/highavailabilitysetting/{enabledrbd}": {
             "post": {
                 "description": "post EnableDRBDSetting",
                 "consumes": [

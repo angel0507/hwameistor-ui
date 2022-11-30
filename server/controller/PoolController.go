@@ -44,6 +44,7 @@ func (n *PoolController) StoragePoolGet(ctx *gin.Context) {
 	sp, err := n.m.StoragePoolController().GetStoragePool(poolName)
 	if err != nil {
 		ctx.JSON(http.StatusNotFound, nil)
+		return
 	}
 
 	ctx.JSON(http.StatusOK, sp)
@@ -73,6 +74,7 @@ func (n *PoolController) StoragePoolList(ctx *gin.Context) {
 	lds, err := n.m.StoragePoolController().StoragePoolList(int32(p), int32(ps))
 	if err != nil {
 		ctx.JSON(http.StatusNotFound, nil)
+		return
 	}
 
 	ctx.JSON(http.StatusOK, lds)
@@ -109,6 +111,7 @@ func (n *PoolController) StorageNodesGetByPoolName(ctx *gin.Context) {
 	sn, err := n.m.StoragePoolController().GetStorageNodeByPoolName(storagePoolName, int32(p), int32(ps))
 	if err != nil {
 		ctx.JSON(http.StatusNotFound, nil)
+		return
 	}
 
 	ctx.JSON(http.StatusOK, sn)
@@ -154,6 +157,7 @@ func (n *PoolController) StorageNodeDisksGetByPoolName(ctx *gin.Context) {
 	sndisksByPoolName, err := n.m.StoragePoolController().StorageNodeDisksGetByPoolName(storagePoolName, nodeName, int32(p), int32(ps))
 	if err != nil {
 		ctx.JSON(http.StatusNotFound, nil)
+		return
 	}
 
 	ctx.JSON(http.StatusOK, sndisksByPoolName)

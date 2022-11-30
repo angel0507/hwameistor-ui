@@ -42,6 +42,7 @@ func (n *SettingController) EnableDRBDSetting(ctx *gin.Context) {
 	setting, err := n.m.SettingController().EnableHighAvailability()
 	if err != nil {
 		ctx.JSON(http.StatusNotFound, nil)
+		return
 	}
 
 	ctx.JSON(http.StatusOK, setting)
@@ -61,6 +62,7 @@ func (n *SettingController) DRBDSettingGet(ctx *gin.Context) {
 	setting, err := n.m.SettingController().GetDRBDSetting()
 	if err != nil {
 		ctx.JSON(http.StatusNotFound, nil)
+		return
 	}
 
 	ctx.JSON(http.StatusOK, setting)

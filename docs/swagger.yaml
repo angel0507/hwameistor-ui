@@ -838,7 +838,7 @@ paths:
       summary: 摘要 获取高可用设置
       tags:
       - Setting
-  /settings/highavailabilitysetting/:enabledrbd:
+  /settings/highavailabilitysetting/{enabledrbd}:
     post:
       consumes:
       - application/json

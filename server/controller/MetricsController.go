@@ -42,6 +42,7 @@ func (v *MetricsController) BaseMetric(ctx *gin.Context) {
 	baseCapacity, err := v.m.MetricController().GetBaseMetric()
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, nil)
+		return
 	}
 
 	ctx.JSON(http.StatusOK, baseCapacity)
@@ -61,6 +62,7 @@ func (v *MetricsController) StoragePoolUseMetric(ctx *gin.Context) {
 	storagePoolUseMetric, err := v.m.MetricController().GetStoragePoolUseMetric()
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, nil)
+		return
 	}
 
 	ctx.JSON(http.StatusOK, storagePoolUseMetric)
@@ -88,6 +90,7 @@ func (v *MetricsController) NodeStorageUseMetric(ctx *gin.Context) {
 	nodeStorageUseMetric, err := v.m.MetricController().GetNodeStorageUseMetric(storagePoolClass)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, nil)
+		return
 	}
 
 	ctx.JSON(http.StatusOK, nodeStorageUseMetric)
@@ -107,6 +110,7 @@ func (v *MetricsController) ModuleStatusMetric(ctx *gin.Context) {
 	moduleStatusMetric, err := v.m.MetricController().GetModuleStatusMetric()
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, nil)
+		return
 	}
 
 	ctx.JSON(http.StatusOK, moduleStatusMetric)
@@ -136,6 +140,7 @@ func (v *MetricsController) OperationList(ctx *gin.Context) {
 	operationListMetric, err := v.m.MetricController().OperationListMetric(int32(p), int32(ps))
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, nil)
+		return
 	}
 
 	ctx.JSON(http.StatusOK, operationListMetric)
